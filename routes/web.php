@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlunosEstrangeirosController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AlunosAtivosAutodeclaradosController;
@@ -209,3 +210,10 @@ Route::get('/turmas/{prefix}/concatenate', [DisciplinaController::class, 'concat
 Route::get('/pub', [PUBController::class, 'show']);
 # Logs  
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->middleware('can:admins');
+
+//bolsas
+Route::get('/bolsas', [BolsasController::class, 'showBolsas']);
+
+
+//alunos Estrangeiros
+Route::get('/estrangeiros', [AlunosEstrangeirosController::class, 'show']);

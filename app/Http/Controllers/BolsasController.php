@@ -16,13 +16,11 @@ class BolsasController extends Controller
     private $excel;
 
     public function listarBolsas(Excel $excel, Request $request){
-        $this->authorize('admins');
         $this->excel = $excel;
 
         $curso = $request->curso ?? 1;
         $ano = $request->ano ?? Date('Y');
         $tipos =  ReplicadoTemp::listarBolsas($ano, $curso);
-      
         
         $cursos = ($curso == 1 ) ? Graduacao::obterCodigosCursos() : [$curso];
         
@@ -45,5 +43,20 @@ class BolsasController extends Controller
         return $this->excel->download($export, 'BolsasGraduacao.xlsx');
 
     }
+
+    public function showBolsas(){
+        $curso = $request->curso ?? 1;
+        $cursos = ($curso == 1 ) ? Graduacao::obterCodigosCursos() : [$curso];
+        
+        $bolsa = ReplicadoTemp::listarBolsas(2023, 8020);
+
+        $curso = ReplicadoTemp::listarAlunoEstrangeiro(2024);
+    
+        // Verifique o conteúdo de $bolsa
+        //dd($curso);
+    
+        return view('bolsas', ['bolsa' => $bolsa, 'curso' => $curso]);
+    }
+    
 
 }
