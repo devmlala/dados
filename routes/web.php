@@ -45,6 +45,7 @@ use App\Http\Controllers\RestritoController;
 use App\Http\Controllers\TransferenciaController;
 use App\Http\Controllers\TrancamentosCursoSemestralController;
 use App\Http\Controllers\DisciplinaController;
+use App\Http\Controllers\AnuarioController;
 
 //IC
 use App\Http\Controllers\IniciacaoCientController;
@@ -182,7 +183,7 @@ Route::get('/defesas', [DefesaController::class, 'index']);
 # Pesquisa
 Route::get('/pesquisa', [PesquisaController::class, 'contarPesquisasAtivasPorTipo']);
 Route::get('/pesquisa/iniciacao_cientifica', [IniciacaoCientificaController::class, 'index']);
-    
+
 Route::get('/pesquisa/pesquisadores_colaboradores', [PesquisaController::class, 'listarPesquisadoresColaboradores']);
 Route::get('/pesquisa/pos_doutorandos', [PesquisaController::class, 'listarPesquisasPosDoutorandos']);
 Route::get('/pesquisa/projetos_pesquisa', [PesquisaController::class, 'listarProjetosPesquisa']);
@@ -212,11 +213,41 @@ Route::get('/turmas', [DisciplinaController::class, 'turmas']);
 Route::get('/turmas/{prefix}', [DisciplinaController::class, 'prefix']);
 Route::get('/turmas/{prefix}/concatenate', [DisciplinaController::class, 'concatenate']);
 
-#GUIA
-Route::get('/guia',
-    function () {
-        return view('guia');
-    });
+
+
+
+#ANUARIO
+Route::get('/anuario', [AnuarioController::class, 'index'])->name('anuario.index');
+Route::get('/anuario/{ano}/secoes', [AnuarioController::class, 'listarSecoes'])->name('anuario.secoes');
+Route::get('/anuario/{ano}/{secao}/conteudo', [AnuarioController::class, 'mostrarConteudo'])->name('anuario.conteudo');
+Route::get('/anuario/tabelas/{ano}', [AnuarioController::class, 'listarTabelas'])->name('anuario.tabelas');
+Route::get('/anuario/graficos/{ano}', [AnuarioController::class, 'listarGraficos'])->name('anuario.graficos');
+
+
+
+Route::get('/anuario/pdf/{ano}/{secao}', [AnuarioController::class, 'gerarPdf'])->name('anuario.gerarPdf');
+
+// routes/web.php
+
+
+// Rota para a página de gráficos
+Route::get('/anuario/graficos/{ano}', [AnuarioController::class, 'listarGraficos'])->name('anuario.graficos');
+
+Route::prefix('anuario')->group(function () {
+    // Rotas específicas para as views dentro de "secoes"
+    Route::get('/infogeral/{codigo?}', function ($codigo = null) {
+        return view('anuario.secoes.infogeral', ['codigo' => $codigo]);
+    })->name('anuario.infogeral');
+
+    Route::get('/infodemo/{codigo?}', function ($codigo = null) {
+        return view('anuario.secoes.infodemo', ['codigo' => $codigo]);
+    })->name('anuario.infodemo');
+});
+
+
+
+
+
 
 # Logs  
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->middleware('can:admins');

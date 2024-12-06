@@ -25,7 +25,12 @@
             ]
          ],
 
-         
+         [
+            'title' => 'Anuário Estatístico FFLCH',
+            'items' => [
+                ['name' => 'Anuário Estatístico FFLCH', 'url' => '/anuario'],
+            ]
+         ],
         
         [
             'title' => 'Dados de produção acadêmica', 
