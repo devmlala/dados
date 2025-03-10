@@ -53,7 +53,7 @@ public function listarTabelas($ano)
     // Retorna a view com as variáveis necessárias
     return view('anuario.index', compact('anosDisponiveis', 'anoSelecionado', 'itensTabelas'));
 }
-
+    
 
     /**
      * Exibe a página de gráficos para o ano especificado.
