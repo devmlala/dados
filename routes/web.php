@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+
 # Index
 use App\Http\Controllers\IndexController;
 Route::get('/', [IndexController::class, 'index']);
@@ -23,3 +24,11 @@ Route::get('/restrito/estagiarios', [EstagiarioController::class, 'index']);
 # Restrito...
 use App\Http\Controllers\Restrito\IntercambistasController;
 Route::get('/restrito/intercambitas/recebidos', [IntercambistasController::class, 'listarIntercambistasRecebidos']);
+
+
+
+
+#lattes
+use App\Http\Controllers\LattesController;
+//listar 
+Route::get('/lattes', [LattesController::class, 'listarLattesDocentes']);
