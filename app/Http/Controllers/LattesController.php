@@ -3,45 +3,94 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Uspdev\Replicado\Pessoa;
 use Uspdev\Replicado\Lattes;
-use Uspdev\Replicado\Docente;
-use DB;
+use Maatwebsite\Excel\Excel;
+use App\Exports\DadosExport;
 
 class LattesController extends Controller
 {
-    // Lista os currículos dos docentes da unidade configurada
-    public function listarLattesDocentes()
+    public function index()
     {
-        $query = "
-            SELECT DISTINCT p.nompesttd, v.codpes, v.dtainivin, v.dtafimvin
-FROM VINCULOPESSOAUSP v
-JOIN TIPOVINCULO t ON v.tipvin = t.tipvin
-JOIN PESSOA p ON v.codpes = p.codpes
-WHERE t.tipvin IN ('ALUNOICD', 'ALUNOCONVENIOINT')
-AND codfusclgund = 8
-ORDER BY dtainivin
-        ";
-
-        $resultados = DB::select($query);
-        dd($resultados);
+        $docentes = Pessoa::listarDocentes();
+        return view('lattes', compact('docentes'));
     }
 
-    // Lista o resumo dos currículos de docentes especifícados
-    public function listarResumoCurriculos()
+    public function baixarExcel(Excel $excel, Request $request, $codpes, $secao)
     {
-        $docentes = [5385361, 3544058, 3105829];
-        $resumo = [];
+        $lattes = Lattes::obterArray($codpes);
+        $secoes = $this->extrairSecoesPrincipais($lattes);
 
-        foreach ($docentes as $codpes) {
-            $dados = Lattes::obterArray($codpes);
-            $resumo[] = [
-                'codpes' => $codpes,
-                'nome' => $dados['nome'] ?? 'Não disponível',
-                'data_atualizacao' => $dados['data_atualizacao'] ?? 'Não disponível',
-                'url' => $dados['url'] ?? '',
-            ];
+        if (!isset($secoes[$secao])) {
+            abort(404, 'Seção inválida');
         }
 
-        return view('lattes.resumo', ['resumos' => $resumo]);
+        $dadosBrutos = $secoes[$secao];
+        $linhas = $this->normalizarArray($dadosBrutos);
+        $cabecalhos = $this->gerarCabecalhos($linhas);
+
+        $export = new DadosExport($linhas, $cabecalhos);
+        return $excel->download($export, "{$secao}_{$codpes}.xlsx");
+    }
+
+    private function extrairSecoesPrincipais(array $lattes): array
+    {
+        return [
+            'atributos' => $lattes['ATTRIBUTES'] ?? [],
+            'resumo_cv' => $lattes['RESUMO-CV'] ?? [],
+            'outras_informacoes' => $lattes['OUTRAS-INFORMACOES-RELEVANTES'] ?? [],
+            'producao_bibliografica' => $lattes['PRODUCAO-BIBLIOGRAFICA'] ?? [],
+            'atuacao_profissional' => $lattes['ATUACAO-PROFISSIONAL'] ?? [],
+            'formacao' => $lattes['FORMACAO-ACADEMICA-TITULACAO'] ?? [],
+            'atuacoes_projetos' => $lattes['PROJETOS-DE-PESQUISA'] ?? [],
+            'bancas' => $lattes['PARTICIPACAO-EM-BANCAS'] ?? [],
+            'idiomas' => $lattes['IDIOMAS'] ?? [],
+        ];
+    }
+
+    private function normalizarArray($dados): array
+    {
+        $linhas = [];
+
+        // Se for um array associativo direto (ex: ATTRIBUTES)
+        if ($this->isAssociative($dados)) {
+            $linha = [];
+            array_walk_recursive($dados, function ($value, $key) use (&$linha) {
+                $linha[$key] = $value;
+            });
+            $linhas[] = $linha;
+            return $linhas;
+        }
+
+        // Se for uma lista de elementos
+        foreach ($dados as $item) {
+            if (is_array($item)) {
+                $linha = [];
+                array_walk_recursive($item, function ($value, $key) use (&$linha) {
+                    if (!isset($linha[$key])) {
+                        $linha[$key] = $value;
+                    } else {
+                        // Evita sobreposição de chave
+                        $linha[$key . '_2'] = $value;
+                    }
+                });
+                $linhas[] = $linha;
+            } else {
+                $linhas[] = [$item];
+            }
+        }
+
+        return $linhas;
+    }
+
+    private function isAssociative(array $arr): bool
+    {
+        return array_keys($arr) !== range(0, count($arr) - 1);
+    }
+
+
+    private function gerarCabecalhos(array $linhas): array
+    {
+        return isset($linhas[0]) ? array_keys($linhas[0]) : ['Dado'];
     }
 }
