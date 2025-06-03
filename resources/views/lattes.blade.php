@@ -37,10 +37,5 @@
             @endforeach
         </tbody>
     </table>
-
-    {{-- Paginação --}}
-    <div class="d-flex justify-content-center">
-        {{ $docentes->links() }}
-    </div>
 </div>
 @endsection
