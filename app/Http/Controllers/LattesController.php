@@ -13,6 +13,7 @@ class LattesController extends Controller
     public function index()
     {
         $docentes = Pessoa::listarDocentes();
+        
         return view('lattes', compact('docentes'));
     }
 
