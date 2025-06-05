@@ -12,10 +12,17 @@ class LattesController extends Controller
 {
     public function index()
     {
-        $docentes = Pessoa::listarDocentes();
-        
+        $docentes = Pessoa::listarDocentes();        
+        foreach ($docentes as $docente) {
+            $codpes = $docente['codpes'];
+            $lattes = Lattes::obterArray($codpes);
+            $docente['lattes'] = $lattes;
+            $lattesProducao = array_values($lattes["PRODUCAO-BIBLIOGRAFICA"]);
+            dd($lattesProducao);
+        }
         return view('lattes', compact('docentes'));
     }
+
 
     public function baixarExcel(Excel $excel, Request $request, $codpes, $secao)
     {
@@ -33,6 +40,7 @@ class LattesController extends Controller
         $export = new DadosExport($linhas, $cabecalhos);
         return $excel->download($export, "{$secao}_{$codpes}.xlsx");
     }
+
 
     private function extrairSecoesPrincipais(array $lattes): array
     {
@@ -94,4 +102,5 @@ class LattesController extends Controller
     {
         return isset($linhas[0]) ? array_keys($linhas[0]) : ['Dado'];
     }
+
 }
