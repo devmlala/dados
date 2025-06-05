@@ -30,4 +30,5 @@ Route::get('/restrito/intercambitas/recebidos', [IntercambistasController::class
 
 use App\Http\Controllers\LattesController;
 Route::get('/lattes', [LattesController::class, 'index'])->name('lattes.index');
-Route::get('/lattes/{codpes}/{secao}', [LattesController::class, 'baixarExcel'])->name('lattes.download');
+Route::get('/lattes/{codpes}', [LattesController::class, 'show'])->name('lattes.show');
+Route::get('/lattes/download/{codpes}/{secao}/{subsecao}', [LattesController::class, 'baixarExcel'])->name('lattes.download');

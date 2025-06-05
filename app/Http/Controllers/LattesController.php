@@ -10,37 +10,53 @@ use App\Exports\DadosExport;
 
 class LattesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $docentes = Pessoa::listarDocentes();        
-        foreach ($docentes as $docente) {
+        $inicio = microtime(true);
+
+        $limit = intval($request->query('limit', 5));
+        $todosDocentes = Pessoa::listarDocentes();
+        $docentesSelecionados = array_slice($todosDocentes, 0, $limit);
+
+        $docentes = [];
+
+        foreach ($docentesSelecionados as $docente) {
             $codpes = $docente['codpes'];
             $lattes = Lattes::obterArray($codpes);
-            $docente['lattes'] = $lattes;
-            $lattesProducao = array_values($lattes["PRODUCAO-BIBLIOGRAFICA"]);
-            dd($lattesProducao);
+
+            $docente['subsecoes'] = [];
+
+            if ($lattes) {
+                foreach ($this->extrairSecoesPrincipais($lattes) as $secao => $conteudo) {
+                    foreach ($this->extrairSubsecoes($conteudo) as $subsecao => $dados) {
+                        $docente['subsecoes'][$secao][] = $subsecao;
+                    }
+                }
+            }
+
+            $docentes[] = $docente;
         }
-        return view('lattes', compact('docentes'));
+
+        $tempoExecucao = round(microtime(true) - $inicio, 2);
+
+        return view('lattes', compact('docentes', 'tempoExecucao', 'limit'));
     }
 
-
-    public function baixarExcel(Excel $excel, Request $request, $codpes, $secao)
+    public function baixarExcel(Excel $excel, Request $request, $codpes, $secao, $subsecao)
     {
         $lattes = Lattes::obterArray($codpes);
         $secoes = $this->extrairSecoesPrincipais($lattes);
+        if (!isset($secoes[$secao])) abort(404, 'Seção inválida');
 
-        if (!isset($secoes[$secao])) {
-            abort(404, 'Seção inválida');
-        }
+        $subsecoes = $this->extrairSubsecoes($secoes[$secao]);
+        if (!isset($subsecoes[$subsecao])) abort(404, 'Subseção inválida');
 
-        $dadosBrutos = $secoes[$secao];
-        $linhas = $this->normalizarArray($dadosBrutos);
+        $linhas = $this->normalizarArray($subsecoes[$subsecao]);
         $cabecalhos = $this->gerarCabecalhos($linhas);
 
         $export = new DadosExport($linhas, $cabecalhos);
-        return $excel->download($export, "{$secao}_{$codpes}.xlsx");
+        return $excel->download($export, "{$secao}_{$subsecao}_{$codpes}.xlsx");
     }
-
 
     private function extrairSecoesPrincipais(array $lattes): array
     {
@@ -57,38 +73,37 @@ class LattesController extends Controller
         ];
     }
 
+    private function extrairSubsecoes($conteudo): array
+    {
+        $subsecoes = [];
+        foreach ($conteudo as $item) {
+            if (is_array($item)) {
+                foreach ($item as $subsecao => $dados) {
+                    $subsecoes[$subsecao] = array_merge($subsecoes[$subsecao] ?? [], $dados);
+                }
+            }
+        }
+        return $subsecoes;
+    }
+
     private function normalizarArray($dados): array
     {
         $linhas = [];
-
-        // Se for um array associativo direto (ex: ATTRIBUTES)
         if ($this->isAssociative($dados)) {
             $linha = [];
             array_walk_recursive($dados, function ($value, $key) use (&$linha) {
                 $linha[$key] = $value;
             });
             $linhas[] = $linha;
-            return $linhas;
-        }
-
-        // Se for uma lista de elementos
-        foreach ($dados as $item) {
-            if (is_array($item)) {
+        } else {
+            foreach ($dados as $item) {
                 $linha = [];
                 array_walk_recursive($item, function ($value, $key) use (&$linha) {
-                    if (!isset($linha[$key])) {
-                        $linha[$key] = $value;
-                    } else {
-                        // Evita sobreposição de chave
-                        $linha[$key . '_2'] = $value;
-                    }
+                    $linha[$key] = $value;
                 });
                 $linhas[] = $linha;
-            } else {
-                $linhas[] = [$item];
             }
         }
-
         return $linhas;
     }
 
@@ -97,10 +112,8 @@ class LattesController extends Controller
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
-
     private function gerarCabecalhos(array $linhas): array
     {
         return isset($linhas[0]) ? array_keys($linhas[0]) : ['Dado'];
     }
-
 }
