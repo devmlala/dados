@@ -8,6 +8,7 @@
         <strong>Debug:</strong><br>
         Número de docentes exibidos: {{ $limit }}<br>
         Tempo de execução: {{ $tempoExecucao }} segundos<br>
+
         <form method="get" class="mt-2 d-inline-block">
             <label for="limit">Alterar quantidade:</label>
             <input type="number" name="limit" value="{{ $limit }}" min="1" max="100" class="form-control d-inline w-auto">
@@ -33,10 +34,11 @@
                         @if (!empty($docente['subsecoes']))
                             @foreach ($docente['subsecoes'] as $secao => $subsecoes)
                                 <div class="mb-2">
-                                    <strong>{{ ucfirst(str_replace('_', ' ', $secao)) }}</strong><br>
+                                    <strong class="text-uppercase">{{ str_replace('_', ' ', $secao) }}</strong><br>
                                     @foreach ($subsecoes as $subsecao)
                                         <a href="{{ route('lattes.download', [$docente['codpes'], $secao, $subsecao]) }}"
-                                           class="btn btn-sm btn-outline-primary mt-1 me-1">
+                                           class="btn btn-sm btn-outline-primary mt-1 me-1"
+                                           title="Exportar {{ $subsecao }} para Excel">
                                             {{ ucwords(str_replace(['-', '_'], ' ', strtolower($subsecao))) }}
                                         </a>
                                     @endforeach
@@ -54,5 +56,11 @@
             @endforelse
         </tbody>
     </table>
+
+    <div class="mt-4 alert alert-warning">
+        <strong>Aviso:</strong><br>
+        Algumas seções como <code>ATRIBUTOS</code> ou <code>RESUMO-CV</code> podem gerar arquivos com apenas uma linha ou dados genéricos. Isso ocorre porque o formato dessas seções é diferente das seções com listas, como <code>PRODUCAO-BIBLIOGRAFICA</code>.<br>
+        Se necessário, os dados brutos dessas subseções serão exportados como texto JSON.
+    </div>
 </div>
 @endsection
