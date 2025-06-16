@@ -30,5 +30,14 @@ Route::get('/restrito/intercambitas/recebidos', [IntercambistasController::class
 
 use App\Http\Controllers\LattesController;
 Route::get('/lattes', [LattesController::class, 'index'])->name('lattes.index');
-Route::get('/lattes/{codpes}', [LattesController::class, 'show'])->name('lattes.show');
-Route::get('/lattes/download/{codpes}/{secao}/{subsecao}', [LattesController::class, 'baixarExcel'])->name('lattes.download');
+
+//artigos lattes
+Route::prefix('lattes')->group(function () {
+    Route::get('/', [LattesController::class, 'index'])->name('lattes.index');
+
+    Route::prefix('docentes')->group(function () {
+        Route::get('artigos', [LattesController::class, 'artigos'])->name('lattes.docentes.artigos');
+        // Futuras rotas:
+        // Route::get('resumos', [LattesController::class, 'resumos'])->name('lattes.docentes.resumos');
+    });
+});
