@@ -25,8 +25,7 @@ Route::get('/restrito/estagiarios', [EstagiarioController::class, 'index']);
 use App\Http\Controllers\Restrito\IntercambistasController;
 Route::get('/restrito/intercambitas/recebidos', [IntercambistasController::class, 'listarIntercambistasRecebidos']);
 
-
-
+    
 
 use App\Http\Controllers\LattesController;
 Route::get('/lattes', [LattesController::class, 'index'])->name('lattes.index');
@@ -41,3 +40,5 @@ Route::prefix('lattes')->group(function () {
         // Route::get('resumos', [LattesController::class, 'resumos'])->name('lattes.docentes.resumos');
     });
 });
+
+Route::get('/lattes/contabilizar', [LattesController::class, 'contabilizar'])->name('lattes.contabilizar');
