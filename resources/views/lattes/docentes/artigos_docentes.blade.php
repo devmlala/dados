@@ -31,7 +31,10 @@
                         </td>
                         <td>
                             @if (!empty($artigosDocente))
-                            <h3>TOTAL ARTIGOS: {{ count($artigosDocente) }}</h3>
+                                <h5 class="text-primary fw-bold mb-3">
+                                    <i class="fas fa-file-alt me-1"></i>
+                                    Total de Artigos: {{ count($artigos) }}
+                                </h5>
                                 <ul>
                                     @foreach ($artigosDocente as $artigo)
                                         <div class="card mb-2 p-2 shadow-sm border-start border-3 border-primary">

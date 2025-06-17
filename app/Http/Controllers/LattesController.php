@@ -63,6 +63,54 @@ class LattesController extends Controller
         return view('lattes.docentes.artigos_docentes', compact('docentes', 'artigos', 'limit'));
     }
 
+    public function livrosPublicados(Request $request)
+    {
+        $limit = $request->input('limit', 3);
+
+        $todosDocentes = Pessoa::listarDocentes();
+        $docentes = array_slice($todosDocentes, 0, $limit);
+
+        $livrosPublicados = [];
+
+        foreach ($docentes as $docente) {
+            $codpes = $docente['codpes'];
+            $lattesArray = Lattes::obterArray($codpes);
+
+            if ($lattesArray) {
+                $livrosPublicados[$codpes] = Lattes::listarLivrosPublicados($codpes, $lattesArray);
+            } else {
+                $livrosPublicados[$codpes] = [];
+            }
+        }
+
+        return view('lattes.docentes.livros_publicados_docentes', compact('docentes', 'livrosPublicados', 'limit'));
+    }
+
+    public function projetosPesquisa(Request $request)
+    {
+        $limit = $request->input('limit', 3);
+
+        $todosDocentes = Pessoa::listarDocentes();
+        $docentes = array_slice($todosDocentes, 0, $limit);
+
+        $projetosPesquisa = [];
+
+        foreach ($docentes as $docente) {
+            $codpes = $docente['codpes'];
+            $lattesArray = Lattes::obterArray($codpes);
+
+            if ($lattesArray) {
+                $projetosPesquisa[$codpes] = Lattes::listarProjetosPesquisa($codpes, $lattesArray);
+            } else {
+                $projetosPesquisa[$codpes] = [];
+            }
+        }
+
+        //dd($projetosPesquisa);
+
+        return view('lattes.docentes.projetos_pesquisa_docentes', compact('docentes', 'projetosPesquisa', 'limit'));
+    }
+
 
 }
 

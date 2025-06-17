@@ -41,4 +41,13 @@ Route::prefix('lattes')->group(function () {
     });
 });
 
+
+Route::get('/lattes/livros-publicados', [LattesController::class, 'livrosPublicados'])->name('lattes.livros_publicados');
+
+Route::get('/lattes/projetos-pesquisa', [LattesController::class, 'projetosPesquisa'])->name('lattes.artigos');
+
+
+
+
+
 Route::get('/lattes/contabilizar', [LattesController::class, 'contabilizar'])->name('lattes.contabilizar');
