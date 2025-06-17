@@ -46,6 +46,8 @@ Route::get('/lattes/livros-publicados', [LattesController::class, 'livrosPublica
 
 Route::get('/lattes/projetos-pesquisa', [LattesController::class, 'projetosPesquisa'])->name('lattes.artigos');
 
+Route::get('/lattes/curriculo', [LattesController::class, 'curriculo'])->name('lattes.curriculo');
+
 
 
 

@@ -112,5 +112,41 @@ class LattesController extends Controller
     }
 
 
+    public function curriculo(Request $request)
+    {
+        $limit = $request->input('limit', 3);
+
+        $todosDocentes = Pessoa::listarDocentes();
+        $docentes = array_slice($todosDocentes, 0, $limit);
+
+        $curriculo = [];
+
+        foreach ($docentes as $docente) {
+            $codpes = $docente['codpes'];
+            $lattesArray = Lattes::obterArray($codpes);
+
+            if ($lattesArray) {
+                try {
+                    $curriculo[$codpes] = Lattes::retornarResumoCV($codpes, $lattesArray);
+                } catch (\TypeError $e) {
+                    // Log do erro e continua com array vazio
+                    \Log::error("Erro ao processar currículo do docente {$codpes}: " . $e->getMessage());
+                    $curriculo[$codpes] = [];
+                }
+            } else {
+                $curriculo[$codpes] = [];
+            }
+        }
+
+        //dd($curriculo)[$codpes];
+
+        return view('lattes.docentes.curriculo_docentes', [
+            'docentes' => $docentes,
+            'curriculo' => $curriculo,
+            'limit' => $limit
+        ]);
+    }
+
+
 }
 
