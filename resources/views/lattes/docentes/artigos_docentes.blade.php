@@ -33,7 +33,7 @@
                             @if (!empty($artigosDocente))
                                 <h5 class="text-primary fw-bold mb-3">
                                     <i class="fas fa-file-alt me-1"></i>
-                                    Total de Artigos: {{ count($artigos) }}
+                                    Total de Artigos: {{ count($artigosDocente) }}
                                 </h5>
                                 <ul>
                                     @foreach ($artigosDocente as $artigo)
