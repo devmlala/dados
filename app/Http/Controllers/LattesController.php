@@ -1,43 +1,42 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\LattesMetricsService;
 use Uspdev\Replicado\Pessoa;
 use Uspdev\Replicado\Lattes;
 
 class LattesController extends Controller
 {
+    protected $metricsService;
+
+    public function __construct(LattesMetricsService $metricsService)
+    {
+        $this->metricsService = $metricsService;
+    }
+
     public function index()
     {
-        return view('lattes.index'); // visão geral
+        return view('lattes.index');
     }
 
-    public function contabilizar()
+    public function dashboard(Request $request)
     {
-        // busca os artigos etc. e contabiliza por docente
-        $docentes = Pessoa::listarDocentes();
+        $limit = $request->input('limit', 10);
+        $docentesComMetricas = $this->metricsService->getDocentesComMetricas($limit);
 
-        $artigos = [];
-        $livrosPublicados = [];
-
-        foreach ($docentes as $docente) {
-            $codpes = $docente['codpes'];
-            $lattesArray = Lattes::obterArray($codpes);
-
-            if ($lattesArray) {
-                $artigos[$codpes] = Lattes::listarArtigos($codpes, $lattesArray);
-                $livrosPublicados[$codpes] = Lattes::listarLivrosPublicados($codpes, $lattesArray);
-            } else {
-                $artigos[$codpes] = [];
-                $livrosPublicados[$codpes] = [];
-            }
-        }
-
-        dd($artigos, $livrosPublicados);
-        return view('lattes.docentes.contabilizacao_docentes', compact('docentes', 'artigos', 'livrosPublicados'));
-
+        return view('lattes.docentes.dashboard', [
+            'docentes' => $docentesComMetricas,
+            'limit' => $limit
+        ]);
     }
 
+    public function apiMetricas(Request $request)
+    {
+        $limit = $request->input('limit', 10);
+        return response()->json($this->metricsService->getDocentesComMetricas($limit));
+    }
 
     public function artigos(Request $request)
     {
@@ -111,7 +110,6 @@ class LattesController extends Controller
         return view('lattes.docentes.projetos_pesquisa_docentes', compact('docentes', 'projetosPesquisa', 'limit'));
     }
 
-
     public function curriculo(Request $request)
     {
         $limit = $request->input('limit', 3);
@@ -149,4 +147,3 @@ class LattesController extends Controller
 
 
 }
-

@@ -43,13 +43,13 @@ Route::prefix('lattes')->group(function () {
 
 
 Route::get('/lattes/livros-publicados', [LattesController::class, 'livrosPublicados'])->name('lattes.livros_publicados');
-
 Route::get('/lattes/projetos-pesquisa', [LattesController::class, 'projetosPesquisa'])->name('lattes.artigos');
-
 Route::get('/lattes/curriculo', [LattesController::class, 'curriculo'])->name('lattes.curriculo');
 
 
 
-
-
-Route::get('/lattes/contabilizar', [LattesController::class, 'contabilizar'])->name('lattes.contabilizar');
+// Service para métricas Lattes
+Route::prefix('lattes')->group(function () {
+    Route::get('dashboard', [LattesController::class, 'dashboard'])->name('lattes.dashboard');
+    Route::get('api/metricas', [LattesController::class, 'apiMetricas'])->name('lattes.api.metricas');
+});
