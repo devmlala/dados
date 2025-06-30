@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h4 class="mb-4">Docentes e seus Livros Publicados</h4>
+        <h4 class="mb-4">Lattes: Docentes e seus Livros Publicados</h4>
 
         <form method="get" class="mb-3">
             <label for="limit">Quantidade:</label>

@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0">Docentes: Resumo Lattes Completo</h4>
+            <h4 class="mb-0">Lattes: Resumo Docentes Lattes Completo</h4>
             <form method="get" class="form-inline">
                 <div class="input-group">
                     <label for="limit" class="input-group-text">Docentes:</label>
@@ -11,10 +11,12 @@
                         class="form-control form-control-sm" style="width: 70px;">
                     <button class="btn btn-primary btn-sm">
                         <i class="fas fa-filter"></i> Filtrar
-                    </button>
+                        </button>
+
                 </div>
             </form>
         </div>
+
 
         <div class="card shadow-sm mb-4">
             <div class="card-body p-0">
@@ -23,116 +25,52 @@
                         <thead class="thead-light">
                             <tr>
                                 <th class="pl-4">Docente</th>
-                                <th class="text-center">
-                                    <i class="fas fa-file-alt text-primary"></i> Artigos Publicados
-                                </th>
-                                <th class="text-center">
-                                    <i class="fas fa-book text-success"></i> Livros Publicados
-                                </th>
-                                <th class="text-center">
-                                    <i class="fas fa-book-open text-info"></i> Capítulos de Livros
-                                </th>
-                                <th class="text-center">
-                                    <i class="fas fa-project-diagram text-info"></i> Projetos de Pesquisa
-                                </th>
-                                <th class="text-center">
-                                    <i class="fas fa-graduation-cap text-danger"></i> Orientações Doutorado
-                                </th>
-                                <th class="text-center">
-                                    <i class="fas fa-user-graduate text-warning"></i> Orientações Mestrado
-                                </th>
-                                <th class="text-center">
-                                    <i class="fas fa-microscope text-primary"></i> Orientações IC
-                                </th>
-                                <th class="text-center">
-                                    <i class="fas fa-dna text-info"></i> Linhas de Pesquisa
-                                </th>
-                                <th class="text-center">
-                                    <i class="fas fa-newspaper text-secondary"></i> Publicação Jornais
-                                </th>
-                                <th class="text-center">
-                                    <i class="fas fa-calendar-alt text-muted"></i> Atualização
-                                </th>
-                                <th class="text-center">
-                                    <i class="fas fa-file-export text-success"></i> Ações
-                                </th>
+                                <th class="text-center"><i class="fas fa-file-alt text-primary"></i> Artigos</th>
+                                <th class="text-center"><i class="fas fa-book text-success"></i> Livros</th>
+                                <th class="text-center"><i class="fas fa-book-open text-info"></i> Capítulos</th>
+                                <th class="text-center"><i class="fas fa-project-diagram text-info"></i> Projetos</th>
+                                <th class="text-center"><i class="fas fa-graduation-cap text-danger"></i> Doutorado</th>
+                                <th class="text-center"><i class="fas fa-user-graduate text-warning"></i> Mestrado</th>
+                                <th class="text-center"><i class="fas fa-microscope text-primary"></i> IC</th>
+                                <th class="text-center"><i class="fas fa-dna text-info"></i> Pesquisa</th>
+                                <th class="text-center"><i class="fas fa-newspaper text-secondary"></i> Jornais</th>
+                                <th class="text-center"><i class="fas fa-calendar-alt text-muted"></i> Atualização</th>
+                                <th class="text-center"><i class="fas fa-file-export text-success"></i> Ações</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($docentes as $item)
+                            @forelse ($docentes as $docente)
                                 <tr class="border-bottom">
                                     <td class="pl-4">
-                                        <div class="font-weight-bold">{{ $item['docente']['nompes'] }}</div>
-                                        <div class="text-muted small">{{ $item['docente']['codpes'] }}</div>
-                                        @if(!empty($item['orcid']))
-                                            <div class="small">
-                                                <i class="fab fa-orcid text-success"></i> {{ $item['orcid'] }}
+                                        <strong>{{ $docente['docente']['nompes'] }}</strong>
+                                        @if(!empty($docente['orcid']))
+                                            <div class="small text-muted">
+                                                <i class="fab fa-orcid text-success"></i> {{ $docente['orcid'] }}
                                             </div>
                                         @endif
                                     </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-primary badge-pill">
-                                            {{ count($item['artigos'] ?? []) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-success badge-pill">
-                                            {{ count($item['livros'] ?? []) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-info badge-pill">
-                                            {{ count($item['capitulosLivros'] ?? []) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-info badge-pill">
-                                            {{ count($item['projetos'] ?? []) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-danger badge-pill">
-                                            {{ count($item['orientacoesConcluidasDoc'] ?? []) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-warning badge-pill">
-                                            {{ count($item['orientacoesMestrado'] ?? []) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-primary badge-pill">
-                                            {{ count($item['orientacoesIC'] ?? []) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-info badge-pill">
-                                            {{ count($item['linhasDePesquisa'] ?? []) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-secondary badge-pill">
-                                            {{ count($item['textosJornaisRevistas'] ?? []) }}
-                                        </span>
-                                    </td>
+                                    @foreach (['artigos', 'livros', 'capitulosLivros', 'projetos', 'orientacoesConcluidasDoc', 'orientacoesMestrado', 'orientacoesIC', 'linhasDePesquisa', 'textosJornaisRevistas'] as $campo)
+                                        <td class="text-center">
+                                            <span class="badge badge-pill badge-{{ $loop->index % 2 == 0 ? 'primary' : 'info' }}">
+                                                {{ $docente['contagem'][$campo] ?? 0 }}
+                                            </span>
+                                        </td>
+                                    @endforeach
                                     <td class="text-muted text-center small">
-                                        {{ $item['ultimaAtualizacao'] ?? '-' }}
+                                        {{ !empty($docente['ultimaAtualizacao']) ? \Carbon\Carbon::parse($docente['ultimaAtualizacao'])->format('d/m/Y') : '-' }}
                                     </td>
                                     <td class="text-center">
-                                        <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalResumo{{ $item['docente']['codpes'] }}">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <a href="#" class="btn btn-sm btn-primary">
-                                                <i class="fas fa-file-pdf"></i>
-                                            </a>
-                                        </div>
+                                        <button class="btn btn-sm btn-success" data-toggle="modal"
+                                            data-target="#modalResumo{{ $docente['docente']['codpes'] }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="13">
-                                        <div class="alert alert-warning mb-0">Nenhum docente encontrado ou dados indisponíveis.</div>
+                                        <div class="alert alert-warning mb-0">Nenhum docente encontrado ou dados indisponíveis.
+                                        </div>
                                     </td>
                                 </tr>
                             @endforelse
@@ -141,85 +79,91 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal para resumo -->
-    @foreach ($docentes as $item)
-    <div class="modal fade" id="modalResumo{{ $item['docente']['codpes'] }}" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Resumo Completo - {{ $item['docente']['nompes'] }}</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <h6><i class="fas fa-graduation-cap"></i> Formação Acadêmica</h6>
-                        <ul class="list-group small">
-                            @foreach($item['formacaoAcademica'] ?? [] as $formacao)
-                                <li class="list-group-item">{{ $formacao['titulo'] }} - {{ $formacao['instituicao'] }} ({{ $formacao['anoConclusao'] }})</li>
-                            @endforeach
-                        </ul>
-                    </div>
+        <!-- Modal para resumo -->
+        @foreach ($docentes as $docente)
+            <div class="modal fade" id="modalResumo{{ $docente['docente']['codpes'] }}" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Resumo Completo - {{ $docente['docente']['nompes'] }}</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <h6><i class="fas fa-graduation-cap"></i> Formação Acadêmica</h6>
+                                <ul class="list-group small">
+                                    @foreach($docente['formacaoAcademica'] ?? [] as $formacao)
+                                        <li class="list-group-item">{{ $formacao['titulo'] }} - {{ $formacao['instituicao'] }}
+                                            ({{ $formacao['anoConclusao'] }})</li>
+                                    @endforeach
+                                </ul>
+                            </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card mb-3">
-                                <div class="card-header bg-light">
-                                    <h6 class="mb-0"><i class="fas fa-chart-pie"></i> Estatísticas</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="fas fa-chart-pie"></i> Estatísticas</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-unstyled">
+                                                <li><strong>Artigos:</strong> {{ count($docente['artigos'] ?? []) }}</li>
+                                                <li><strong>Livros:</strong> {{ count($docente['livros'] ?? []) }}</li>
+                                                <li><strong>Capítulos:</strong> {{ count($docente['capitulosLivros'] ?? []) }}
+                                                </li>
+                                                <li><strong>Doutorado:</strong>
+                                                    {{ count($docente['orientacoesConcluidasDoc'] ?? []) }}</li>
+                                                <li><strong>Mestrado:</strong>
+                                                    {{ count($docente['orientacoesMestrado'] ?? []) }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <ul class="list-unstyled">
-                                        <li><strong>Artigos:</strong> {{ count($item['artigos'] ?? []) }}</li>
-                                        <li><strong>Livros:</strong> {{ count($item['livros'] ?? []) }}</li>
-                                        <li><strong>Capítulos:</strong> {{ count($item['capitulosLivros'] ?? []) }}</li>
-                                        <li><strong>Orientações Doutorado:</strong> {{ count($item['orientacoesConcluidasDoc'] ?? []) }}</li>
-                                        <li><strong>Orientações Mestrado:</strong> {{ count($item['orientacoesMestrado'] ?? []) }}</li>
-                                    </ul>
+
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="fas fa-trophy"></i> Prêmios</h6>
+                                        </div>
+                                        <div class="card-body">
+
+                                            @if(!empty($docente['premios']))
+                                                <ul class="list-unstyled">
+                                                    @foreach($docente['premios'] as $premio)
+                                                        <ul>
+                                                            <li>{{ $premio }} ({{ $premio }})</li>
+                                                        </ul>
+                                                    @endforeach
+                                                </ul>
+                                            @else
+                                                <p class="text-muted">Nenhum prêmio registrado</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6><i class="fas fa-quote-left"></i> Resumo CV</h6>
+                                <div class="card card-body bg-light">
+                                    {{ $docente['resumoCV'] ?? 'Resumo não disponível' }}
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="card mb-3">
-                                <div class="card-header bg-light">
-                                    <h6 class="mb-0"><i class="fas fa-trophy"></i> Prêmios e Distinções</h6>
-                                </div>
-                                <div class="card-body">
-                                    @if(!empty($item['premios']))
-                                        <ul class="list-unstyled">
-                                            @foreach($item['premios'] as $premio)
-                                                <li>{{ $premio['titulo'] }} ({{ $premio['ano'] }})</li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <p class="text-muted">Nenhum prêmio registrado</p>
-                                    @endif
-                                </div>
-                            </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
                         </div>
                     </div>
-
-                    <div class="mb-3">
-                        <h6><i class="fas fa-quote-left"></i> Resumo CV</h6>
-                        <div class="card card-body bg-light">
-                            {{ $item['resumoCV'] ?? 'Resumo não disponível' }}
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
                 </div>
             </div>
-        </div>
+        @endforeach
     </div>
-    @endforeach
 @endsection
 
 @section('javascripts_bottom')
     <script>
-        $(document).ready(function() {
+        $(function () {
             $('[data-toggle="tooltip"]').tooltip();
         });
     </script>

@@ -26,6 +26,7 @@ class LattesController extends Controller
         $limit = $request->input('limit', 10);
         $docentesComMetricas = $this->metricsService->getDocentesComMetricas($limit);
 
+
         return view('lattes.docentes.dashboard', [
             'docentes' => $docentesComMetricas,
             'limit' => $limit

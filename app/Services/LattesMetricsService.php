@@ -28,7 +28,8 @@ class LattesMetricsService
                 'artigos' => $metricas['artigos'],
                 'livros' => $metricas['livros'],
                 'projetos' => $metricas['projetos'],
-                'orientacoes' => $metricas['orientacoes'],
+                'orientacoesIC' => $metricas['orientacoesIC'],
+                'premios' => $metricas['premios'] ?? [],
                 'contagem' => $metricas['contagem'],
                 'ultima_atualizacao' => $metricas['ultimaAtualizacao'],
             ];
@@ -42,16 +43,10 @@ class LattesMetricsService
      */
     public function getMetricasDetalhadas(int $codpes): array
     {
-        return Cache::remember("lattes_metrics_detalhado_{$codpes}", 3600, function () use ($codpes) {
-            try {
                 $lattesArray = Lattes::obterArray($codpes);
 
-                if (!$lattesArray) {
-                    return $this->metricasVazias();
-                }
-
                 $artigos = Lattes::listarArtigos($codpes, $lattesArray);
-                $artigos = is_array($artigos) ? $artigos : [];
+                //$artigos = is_array($artigos) ? $artigos : [];
 
                 $livros = Lattes::listarLivrosPublicados($codpes, $lattesArray);
                 $livros = is_array($livros) ? $livros : [];
@@ -122,32 +117,42 @@ class LattesMetricsService
                 $orientacoesIC = Lattes::listarOrientacoesConcluidasIC($codpes, $lattesArray);
                 $orientacoesIC = is_array($orientacoesIC) ? $orientacoesIC : [];
 
+                $premios = Lattes::listarPremios($codpes, $lattesArray);
+                $premios = is_array($premios) ? $premios : [];
+
+                $ultimaAtualizacao = Lattes::retornarUltimaAtualizacao($codpes, $lattesArray);
+                $ultimaAtualizacao = is_array($ultimaAtualizacao) ? $ultimaAtualizacao : [];
+
 
                 $contagem = [
                     'artigos' => count($artigos),
                     'livros' => count($livros),
                     'projetos' => count($projetos),
-                    'orient-posdoc-conc' => count($orientacoesConcluidasDoc),
                     'linhas-de-pesquisa' => count($linhasDePesquisa),
                     'textos-jornais-revistas' => count($textosJornaisRevistas),
                     'trabalhos-anais' => count($trabAnais),
                     'trabalhos-tecnicos' => count($trabTecnicos),
-                    'apresentacao-de-trabalho' => count($apresTrab),    
+                    'apresentacao-de-trabalho' => count($apresTrab),
+                    'capitulos-livros' => count($capitulosLivros),
+                    'bancas-mestrado' => count($bancasMestrado),
+                    'bancas-doutorado' => count($bancasDoutorado),
+                    'relatorios-pesquisa' => count($relatoriosPesquisa),
+                    'formacao-academica' => count($formacaoAcademica),
+                    'formacao-profissional' => count($formacaoProfissional),
+                    'organizacao-eventos' => count($organizacaoEventos),
+                    'material-didatico' => count($materialDidatico),
+                    'resumo-cv' => count($resumoCV),
+                    'orcid' => count($orcid),
+                    'orientacoes-concluidas-doutorado' => count($orientacoesConcluidasDoc),
+                    'orientacoes-concluidas-mestrado' => count($orientacoesMestrado),
+                    'orientacoes-concluidas-pos-doutorado' => count($orientacoesPosDoc),
+                    'orientacoes-concluidas-ic' => count($orientacoesIC),
+                    'premios' => count($premios),
+                    'ultima-atualizacao' => count($ultimaAtualizacao),
                 ];
 
-                $ultimaAtualizacao = Lattes::retornarUltimaAtualizacao($codpes, $lattesArray);
 
-                return compact('artigos', 'livros', 'projetos', 'orientacoes', 'contagem', 'ultimaAtualizacao');
-
-            } catch (\Exception $e) {
-                Log::error("Erro ao processar métricas detalhadas Lattes", [
-                    'codpes' => $codpes,
-                    'error' => $e->getMessage()
-                ]);
-
-                return $this->metricasVazias();
-            }
-        });
+                return compact('artigos', 'livros', 'projetos', 'orientacoesIC', 'contagem', 'ultimaAtualizacao', 'orcid', 'linhasDePesquisa', 'textosJornaisRevistas', 'trabAnais', 'trabTecnicos', 'apresTrab', 'capitulosLivros', 'bancasMestrado', 'bancasDoutorado', 'relatoriosPesquisa', 'formacaoAcademica', 'formacaoProfissional', 'premios', 'organizacaoEventos', 'materialDidatico', 'resumoCV');
     }
 
     private function metricasVazias(): array
@@ -156,7 +161,7 @@ class LattesMetricsService
             'artigos' => [],
             'livros' => [],
             'projetos' => [],
-            'orientacoes' => [],
+            'orientacoesIC' => [],
             'contagem' => [
                 'artigos' => 0,
                 'livros' => 0,
