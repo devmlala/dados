@@ -51,5 +51,8 @@ Route::get('/lattes/curriculo', [LattesController::class, 'curriculo'])->name('l
 // Service para métricas Lattes
 Route::prefix('lattes')->group(function () {
     Route::get('dashboard', [LattesController::class, 'dashboard'])->name('lattes.dashboard');
+    //exports
+    Route::get('docente/{codpes}/export', [LattesController::class, 'exportarDocente'])->name('lattes.exportar');
+    Route::get('docente/{codpes}/export-detalhado', [LattesController::class, 'exportarDetalhado'])->name('lattes.exportar_detalhado');
     Route::get('api/metricas', [LattesController::class, 'apiMetricas'])->name('lattes.api.metricas');
 });

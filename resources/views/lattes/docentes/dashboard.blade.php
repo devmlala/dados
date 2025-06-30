@@ -11,12 +11,10 @@
                         class="form-control form-control-sm" style="width: 70px;">
                     <button class="btn btn-primary btn-sm">
                         <i class="fas fa-filter"></i> Filtrar
-                        </button>
-
+                    </button>
                 </div>
             </form>
         </div>
-
 
         <div class="card shadow-sm mb-4">
             <div class="card-body p-0">
@@ -36,6 +34,7 @@
                                 <th class="text-center"><i class="fas fa-newspaper text-secondary"></i> Jornais</th>
                                 <th class="text-center"><i class="fas fa-calendar-alt text-muted"></i> Atualização</th>
                                 <th class="text-center"><i class="fas fa-file-export text-success"></i> Ações</th>
+                                <th class="text-center"><i class="fas fa-download"></i> Exportar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,38 +42,69 @@
                                 <tr class="border-bottom">
                                     <td class="pl-4">
                                         <strong>{{ $docente['docente']['nompes'] }}</strong>
-                                        @if(!empty($docente['orcid']))
+                                        @if (!empty($docente['orcid']))
                                             <div class="small text-muted">
                                                 <i class="fab fa-orcid text-success"></i> {{ $docente['orcid'] }}
                                             </div>
                                         @endif
                                     </td>
-                                    @foreach (['artigos', 'livros', 'capitulosLivros', 'projetos', 'orientacoesConcluidasDoc', 'orientacoesMestrado', 'orientacoesIC', 'linhasDePesquisa', 'textosJornaisRevistas'] as $campo)
+
+                                    @php
+                                        $camposContagem = [
+                                            'artigos',
+                                            'livros',
+                                            'capitulos-livros',
+                                            'projetos',
+                                            'orientacoes-concluidas-doutorado',
+                                            'orientacoes-concluidas-mestrado',
+                                            'orientacoes-concluidas-ic',
+                                            'linhas-de-pesquisa',
+                                            'textos-jornais-revistas'
+                                        ];
+                                    @endphp
+
+                                    @foreach ($camposContagem as $campo)
                                         <td class="text-center">
-                                            <span class="badge badge-pill badge-{{ $loop->index % 2 == 0 ? 'primary' : 'info' }}">
+                                            <span class="d-inline-block px-2 py-1 bg-light border rounded"
+                                                style="font-size: 1.1rem;">
                                                 {{ $docente['contagem'][$campo] ?? 0 }}
                                             </span>
                                         </td>
                                     @endforeach
+
+                                    {{-- Atualização formatada --}}
                                     <td class="text-muted text-center small">
-                                        {{ !empty($docente['ultimaAtualizacao']) ? \Carbon\Carbon::parse($docente['ultimaAtualizacao'])->format('d/m/Y') : '-' }}
+                                        {{ !empty($docente['ultimaAtualizacao']) ? \Carbon\Carbon::createFromFormat('dmY', $docente['ultimaAtualizacao'])->format('d/m/Y') : '-' }}
                                     </td>
+
+                                    {{-- Ação --}}
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-success" data-toggle="modal"
                                             data-target="#modalResumo{{ $docente['docente']['codpes'] }}">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </td>
+
+                                    <td>
+                                        <a href="{{ route('lattes.exportar', $docente['docente']['codpes']) }}"
+                                            class="btn btn-sm btn-outline-primary" title="Exportar Excel">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </td>
+
+
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="13">
+                                    <td colspan="12">
                                         <div class="alert alert-warning mb-0">Nenhum docente encontrado ou dados indisponíveis.
                                         </div>
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
+                    </table>
+
                     </table>
                 </div>
             </div>
@@ -127,7 +157,6 @@
                                             <h6 class="mb-0"><i class="fas fa-trophy"></i> Prêmios</h6>
                                         </div>
                                         <div class="card-body">
-
                                             @if(!empty($docente['premios']))
                                                 <ul class="list-unstyled">
                                                     @foreach($docente['premios'] as $premio)
@@ -148,13 +177,17 @@
                                 <h6><i class="fas fa-quote-left"></i> Resumo CV</h6>
                                 <div class="card card-body bg-light">
                                     {{ $docente['resumoCV'] ?? 'Resumo não disponível' }}
-
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <a href="{{ route('lattes.exportar_detalhado', $docente['docente']['codpes']) }}"
+                                class="btn btn-outline-primary">
+                                <i class="fas fa-file-excel"></i> Exportar Dados Detalhados
+                            </a>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
                         </div>
+
                     </div>
                 </div>
             </div>

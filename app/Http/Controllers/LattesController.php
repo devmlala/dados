@@ -7,6 +7,11 @@ use App\Services\LattesMetricsService;
 use Uspdev\Replicado\Pessoa;
 use Uspdev\Replicado\Lattes;
 
+use App\Exports\DocenteExport;
+use App\Exports\DocenteDetalhadoExport;
+use App\Exports\ArraySheetExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class LattesController extends Controller
 {
     protected $metricsService;
@@ -29,8 +34,18 @@ class LattesController extends Controller
 
         return view('lattes.docentes.dashboard', [
             'docentes' => $docentesComMetricas,
-            'limit' => $limit
+            'limit' => $limit,
         ]);
+    }
+
+    //exports
+    public function exportarDocente($codpes)
+    {
+        return Excel::download(new DocenteExport($codpes), "docente_$codpes.xlsx");
+    }
+    public function exportarDetalhado($codpes)
+    {
+        return Excel::download(new DocenteDetalhadoExport($codpes), "docente_{$codpes}_detalhado.xlsx");
     }
 
     public function apiMetricas(Request $request)

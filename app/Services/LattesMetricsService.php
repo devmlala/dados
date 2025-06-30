@@ -126,7 +126,6 @@ class LattesMetricsService
                 $premios = is_array($premios) ? $premios : [];
 
                 $ultimaAtualizacao = Lattes::retornarUltimaAtualizacao($codpes, $lattesArray);
-                $ultimaAtualizacao = is_array($ultimaAtualizacao) ? $ultimaAtualizacao : [];
 
 
                 $contagem = [
@@ -153,7 +152,7 @@ class LattesMetricsService
                     'orientacoes-concluidas-pos-doutorado' => count($orientacoesPosDoc),
                     'orientacoes-concluidas-ic' => count($orientacoesIC),
                     'premios' => count($premios),
-                    'ultima-atualizacao' => count($ultimaAtualizacao),
+                    //'ultima-atualizacao' => $ultimaAtualizacao,
                 ];
 
 
