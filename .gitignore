@@ -1,0 +1,12 @@
+/node_modules
+/vendor
+.env
+.phpunit.result.cache
+storage/*.key
+*.tmp
+*.bak
+*.swp
+*.swo
+('laravel-usp-theme::master')
+as $docente)
+s=\"*

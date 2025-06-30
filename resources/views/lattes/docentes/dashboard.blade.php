@@ -148,6 +148,7 @@
                                 <h6><i class="fas fa-quote-left"></i> Resumo CV</h6>
                                 <div class="card card-body bg-light">
                                     {{ $docente['resumoCV'] ?? 'Resumo não disponível' }}
+
                                 </div>
                             </div>
                         </div>

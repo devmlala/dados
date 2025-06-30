@@ -27,12 +27,17 @@ class LattesMetricsService
                 'docente' => $docente,
                 'artigos' => $metricas['artigos'],
                 'livros' => $metricas['livros'],
+                'capitulosLivros' => $metricas['capitulosLivros'],
                 'projetos' => $metricas['projetos'],
                 'orientacoesIC' => $metricas['orientacoesIC'],
+                'orientacoesConcluidasDoc' => $metricas['orientacoesConcluidasDoc'],
+                'orientacoesMestrado' => $metricas['orientacoesMestrado'],
                 'premios' => $metricas['premios'] ?? [],
                 'contagem' => $metricas['contagem'],
-                'ultima_atualizacao' => $metricas['ultimaAtualizacao'],
+                'ultimaAtualizacao' => $metricas['ultimaAtualizacao'],
+                'resumoCV' => $metricas['resumoCV'] ?? '',
             ];
+            
         }
 
         return $resultado;
@@ -97,7 +102,7 @@ class LattesMetricsService
                 $materialDidatico = is_array($materialDidatico) ? $materialDidatico : [];
 
                 $resumoCV = Lattes::retornarResumoCV($codpes, 'pt', $lattesArray);
-                $resumoCV = is_array($resumoCV) ? $resumoCV : [];
+                $resumoCV = is_string($resumoCV) ? $resumoCV : [];
 
                 $ultimaAtualizacao = Lattes::retornarUltimaAtualizacao($codpes, $lattesArray);
                 $ultimaAtualizacao = is_array($ultimaAtualizacao) ? $ultimaAtualizacao : [];
@@ -141,7 +146,7 @@ class LattesMetricsService
                     'formacao-profissional' => count($formacaoProfissional),
                     'organizacao-eventos' => count($organizacaoEventos),
                     'material-didatico' => count($materialDidatico),
-                    'resumo-cv' => count($resumoCV),
+                    //'resumo-cv' => count($resumoCV),
                     'orcid' => count($orcid),
                     'orientacoes-concluidas-doutorado' => count($orientacoesConcluidasDoc),
                     'orientacoes-concluidas-mestrado' => count($orientacoesMestrado),
@@ -152,7 +157,34 @@ class LattesMetricsService
                 ];
 
 
-                return compact('artigos', 'livros', 'projetos', 'orientacoesIC', 'contagem', 'ultimaAtualizacao', 'orcid', 'linhasDePesquisa', 'textosJornaisRevistas', 'trabAnais', 'trabTecnicos', 'apresTrab', 'capitulosLivros', 'bancasMestrado', 'bancasDoutorado', 'relatoriosPesquisa', 'formacaoAcademica', 'formacaoProfissional', 'premios', 'organizacaoEventos', 'materialDidatico', 'resumoCV');
+                return compact(
+                    'artigos',
+                    'livros',
+                    'capitulosLivros',
+                    'projetos',
+                    'orientacoesIC',
+                    'orientacoesConcluidasDoc',
+                    'orientacoesMestrado',
+                    'orientacoesPosDoc',
+                    'linhasDePesquisa',
+                    'textosJornaisRevistas',
+                    'trabAnais',
+                    'trabTecnicos',
+                    'apresTrab',
+                    'bancasMestrado',
+                    'bancasDoutorado',
+                    'relatoriosPesquisa',
+                    'formacaoAcademica',
+                    'formacaoProfissional',
+                    'premios',
+                    'organizacaoEventos',
+                    'materialDidatico',
+                    'resumoCV',
+                    'ultimaAtualizacao',
+                    'orcid',
+                    'contagem'
+                );
+                
     }
 
     private function metricasVazias(): array
