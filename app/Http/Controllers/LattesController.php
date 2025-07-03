@@ -68,7 +68,8 @@ class LattesController extends Controller
             $lattesArray = Lattes::obterArray($codpes);
 
             if ($lattesArray) {
-                $artigos[$codpes] = Lattes::listarArtigos($codpes, $lattesArray);
+                // Pass -1 as the limit to remove internal article limit
+                $artigos[$codpes] = Lattes::listarArtigos($codpes, $lattesArray, 'registros', -1);
             } else {
                 $artigos[$codpes] = [];
             }
@@ -92,7 +93,7 @@ class LattesController extends Controller
             $lattesArray = Lattes::obterArray($codpes);
 
             if ($lattesArray) {
-                $livrosPublicados[$codpes] = Lattes::listarLivrosPublicados($codpes, $lattesArray);
+                $livrosPublicados[$codpes] = Lattes::listarLivrosPublicados($codpes, $lattesArray, 'registros', -1);
             } else {
                 $livrosPublicados[$codpes] = [];
             }

@@ -50,10 +50,10 @@ class LattesMetricsService
     {
                 $lattesArray = Lattes::obterArray($codpes);
 
-                $artigos = Lattes::listarArtigos($codpes, $lattesArray);
+                $artigos = Lattes::listarArtigos($codpes, $lattesArray, 'registros', -1);
                 //$artigos = is_array($artigos) ? $artigos : [];
 
-                $livros = Lattes::listarLivrosPublicados($codpes, $lattesArray);
+                $livros = Lattes::listarLivrosPublicados($codpes, $lattesArray, 'registros', -1);
                 $livros = is_array($livros) ? $livros : [];
 
                 $projetos = Lattes::listarProjetosPesquisa($codpes, $lattesArray);
@@ -62,19 +62,19 @@ class LattesMetricsService
                 $linhasDePesquisa = Lattes::listarLinhasPesquisa($codpes, $lattesArray);
                 $linhasDePesquisa = is_array($linhasDePesquisa) ? $linhasDePesquisa : [];
 
-                $textosJornaisRevistas = Lattes::listarTextosJornaisRevistas($codpes, $lattesArray);
+                $textosJornaisRevistas = Lattes::listarTextosJornaisRevistas($codpes, $lattesArray, 'registros', -1);
                 $textosJornaisRevistas = is_array($textosJornaisRevistas) ? $textosJornaisRevistas : [];
 
-                $trabAnais = Lattes::listarTrabalhosAnais($codpes, $lattesArray);
+                $trabAnais = Lattes::listarTrabalhosAnais($codpes, $lattesArray, 'registros', -1);
                 $trabAnais = is_array($trabAnais) ? $trabAnais : [];
 
-                $trabTecnicos = Lattes::listarTrabalhosTecnicos($codpes, $lattesArray);
+                $trabTecnicos = Lattes::listarTrabalhosTecnicos($codpes, $lattesArray, 'registros', -1);
                 $trabTecnicos = is_array($trabTecnicos) ? $trabTecnicos : [];
 
-                $apresTrab = Lattes::listarApresentacaoTrabalho($codpes, $lattesArray);
+                $apresTrab = Lattes::listarApresentacaoTrabalho($codpes, $lattesArray, 'registros', -1);
                 $apresTrab = is_array($apresTrab) ? $apresTrab : [];
 
-                $capitulosLivros = Lattes::listarCapitulosLivros($codpes, $lattesArray);
+                $capitulosLivros = Lattes::listarCapitulosLivros($codpes, $lattesArray, 'registros', -1);
                 $capitulosLivros = is_array($capitulosLivros) ? $capitulosLivros : [];
 
                 $bancasMestrado = Lattes::retornarBancaMestrado($codpes, $lattesArray);
@@ -83,22 +83,22 @@ class LattesMetricsService
                 $bancasDoutorado = Lattes::retornarBancaDoutorado($codpes, $lattesArray);
                 $bancasDoutorado = is_array($bancasDoutorado) ? $bancasDoutorado : [];
 
-                $relatoriosPesquisa = Lattes::listarRelatorioPesquisa($codpes, $lattesArray);
+                $relatoriosPesquisa = Lattes::listarRelatorioPesquisa($codpes, $lattesArray, 'registros', -1);
                 $relatoriosPesquisa = is_array($relatoriosPesquisa) ? $relatoriosPesquisa : [];
 
                 $formacaoAcademica = Lattes::retornarFormacaoAcademica($codpes, $lattesArray);
                 $formacaoAcademica = is_array($formacaoAcademica) ? $formacaoAcademica : [];
 
-                $formacaoProfissional = Lattes::listarFormacaoProfissional($codpes, $lattesArray);
+                $formacaoProfissional = Lattes::listarFormacaoProfissional($codpes, $lattesArray, 'periodo', -1);
                 $formacaoProfissional = is_array($formacaoProfissional) ? $formacaoProfissional : [];
 
                 $premios = Lattes::listarPremios($codpes, $lattesArray);
                 $premios = is_array($premios) ? $premios : [];
 
-                $organizacaoEventos = Lattes::listarOrganizacaoEvento($codpes, $lattesArray);
+                $organizacaoEventos = Lattes::listarOrganizacaoEvento($codpes, $lattesArray, 'registros', -1);
                 $organizacaoEventos = is_array($organizacaoEventos) ? $organizacaoEventos : [];
 
-                $materialDidatico = Lattes::listarMaterialDidaticoInstrucional($codpes, $lattesArray);
+                $materialDidatico = Lattes::listarMaterialDidaticoInstrucional($codpes, $lattesArray, 'registros', -1);
                 $materialDidatico = is_array($materialDidatico) ? $materialDidatico : [];
 
                 $resumoCV = Lattes::retornarResumoCV($codpes, 'pt', $lattesArray);
@@ -110,16 +110,16 @@ class LattesMetricsService
                 $orcid = Lattes::retornarOrcidID($codpes, $lattesArray);
                 $orcid = is_array($orcid) ? $orcid : [];
 
-                $orientacoesConcluidasDoc = Lattes::listarOrientacoesConcluidasDoutorado($codpes, $lattesArray);
+                $orientacoesConcluidasDoc = Lattes::listarOrientacoesConcluidasDoutorado($codpes, $lattesArray, 'registros', -1);
                 $orientacoesConcluidasDoc = is_array($orientacoesConcluidasDoc) ? $orientacoesConcluidasDoc : [];
 
-                $orientacoesMestrado = Lattes::listarOrientacoesConcluidasMestrado($codpes, $lattesArray);
+                $orientacoesMestrado = Lattes::listarOrientacoesConcluidasMestrado($codpes, $lattesArray, 'registros', -1);
                 $orientacoesMestrado = is_array($orientacoesMestrado) ? $orientacoesMestrado : [];
 
-                $orientacoesPosDoc = Lattes::listarOrientacoesConcluidasPosDoutorado($codpes, $lattesArray);
+                $orientacoesPosDoc = Lattes::listarOrientacoesConcluidasPosDoutorado($codpes, $lattesArray, 'registros', -1);
                 $orientacoesPosDoc = is_array($orientacoesPosDoc) ? $orientacoesPosDoc : [];
 
-                $orientacoesIC = Lattes::listarOrientacoesConcluidasIC($codpes, $lattesArray);
+                $orientacoesIC = Lattes::listarOrientacoesConcluidasIC($codpes, $lattesArray, 'registros', -1);
                 $orientacoesIC = is_array($orientacoesIC) ? $orientacoesIC : [];
 
                 $premios = Lattes::listarPremios($codpes, $lattesArray);
@@ -146,7 +146,7 @@ class LattesMetricsService
                     'organizacao-eventos' => count($organizacaoEventos),
                     'material-didatico' => count($materialDidatico),
                     //'resumo-cv' => count($resumoCV),
-                    'orcid' => count($orcid),
+                    //'orcid' => count($orcid),
                     'orientacoes-concluidas-doutorado' => count($orientacoesConcluidasDoc),
                     'orientacoes-concluidas-mestrado' => count($orientacoesMestrado),
                     'orientacoes-concluidas-pos-doutorado' => count($orientacoesPosDoc),

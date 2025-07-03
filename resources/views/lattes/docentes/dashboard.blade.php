@@ -6,7 +6,7 @@
             <h4 class="mb-0">Lattes: Resumo Docentes Lattes Completo</h4>
             <form method="get" class="form-inline">
                 <div class="input-group">
-                    <label for="limit" class="input-group-text">Docentes:</label>
+                    <label for="limit" class="input-group-text">Docentes: {{ count($docentes) }}</label>
                     <input type="number" name="limit" value="{{ $limit }}" min="1" max="50"
                         class="form-control form-control-sm" style="width: 70px;">
                     <button class="btn btn-primary btn-sm">
@@ -90,8 +90,7 @@
                                             class="btn btn-sm btn-outline-primary" title="Exportar Excel">
                                             <i class="fas fa-download"></i>
                                         </a>
-                                    </td>
-
+                                    </td>   
 
                                 </tr>
                             @empty
