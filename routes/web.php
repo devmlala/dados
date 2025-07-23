@@ -56,3 +56,9 @@ Route::prefix('lattes')->group(function () {
     Route::get('docente/{codpes}/export-detalhado', [LattesController::class, 'exportarDetalhado'])->name('lattes.exportar_detalhado');
     Route::get('api/metricas', [LattesController::class, 'apiMetricas'])->name('lattes.api.metricas');
 });
+
+use App\Http\Controllers\DisciplinaController;
+
+Route::get('/turmas', [DisciplinaController::class, 'turmas']);
+Route::get('/turmas/{prefix}', [DisciplinaController::class, 'prefix']);
+Route::get('/turmas/{prefix}/concatenate', [DisciplinaController::class, 'concatenate']);

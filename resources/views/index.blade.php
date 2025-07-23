@@ -31,6 +31,16 @@
                     ['name' => 'Exportar Todos os Dados', 'url' => '/lattes/exportar/todos'],
                 ]
             ],
+            [
+                'title' => 'Dados de Disciplinas',
+                'items' => [
+                    ['name' => 'Turmas', 'url' => '/turmas', 'api' => '/api/disciplinas/turmas'],
+                    ['name' => 'Disciplinas por Prefixo', 'url' => '/turmas/prefix', 'api' => '/api/disciplinas/prefix'],
+                    ['name' => 'Concatenar Disciplinas', 'url' => '/turmas/prefix/concatenate', 'api' => '/api/disciplinas/concatenate'],
+                ]
+            ],
+
+
         ];
     @endphp
 
