@@ -22,7 +22,7 @@
                     <table class="table table-hover mb-0">
                         <thead class="thead-light">
                             <tr>
-                                <th class="pl-4">Docente {{  }}</th>
+                                <th class="pl-4">Docente</th>
                                 <th class="text-center"><i class="fas fa-file-alt text-primary"></i> Artigos</th>
                                 <th class="text-center"><i class="fas fa-book text-success"></i> Livros</th>
                                 <th class="text-center"><i class="fas fa-book-open text-info"></i> Capítulos</th>
