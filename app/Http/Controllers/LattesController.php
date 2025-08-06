@@ -28,15 +28,45 @@ class LattesController extends Controller
 
     public function dashboard(Request $request)
     {
-        $limit = $request->input('limit', 10);
-        $docentesComMetricas = $this->metricsService->getDocentesComMetricas($limit);
+        $limit = 5;
+        $busca = $request->input('busca'); // captura o texto da busca
+        $page = $request->input('page', 1);
 
+        // Lista todos os docentes
+        $todosDocentes = Pessoa::listarDocentes();
+
+        // Filtra por nome, se houver busca
+        if (!empty($busca)) {
+            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
+                return stripos($docente['nompes'], $busca) !== false;
+            });
+            $todosDocentes = array_values($todosDocentes); // reindexa o array
+        }
+
+        // Pagina os resultados
+        $offset = ($page - 1) * $limit;
+        $docentesPagina = array_slice($todosDocentes, $offset, $limit);
+
+        // Obtém as métricas dos docentes da página atual
+        $docentesComMetricas = $this->metricsService->getDocentesComMetricasParaLista($docentesPagina);
+
+        // Cria um paginator manual
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $docentesComMetricas,
+            count($todosDocentes),
+            $limit,
+            $page,
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
 
         return view('lattes.docentes.dashboard', [
-            'docentes' => $docentesComMetricas,
+            'docentes' => $paginator,
             'limit' => $limit,
+            'busca' => $busca,
         ]);
     }
+
+
 
     //exports
     public function exportarDocente($codpes)

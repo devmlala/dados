@@ -5,15 +5,15 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="mb-0">Lattes: Resumo Docentes Lattes Completo</h4>
             <form method="get" class="form-inline">
-                <div class="input-group">
-                    <label for="limit" class="input-group-text">Docentes: {{ count($docentes) }}</label>
-                    <input type="number" name="limit" value="{{ $limit }}" min="1" max="50"
-                        class="form-control form-control-sm" style="width: 70px;">
-                    <button class="btn btn-primary btn-sm">
-                        <i class="fas fa-filter"></i> Filtrar
-                    </button>
+                <div class="input-group mr-2">
+                    <input type="text" name="busca" value="{{ request('busca') }}" class="form-control form-control-sm"
+                        placeholder="Nome do docente">
                 </div>
+                <button class="btn btn-primary btn-sm">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
             </form>
+
         </div>
 
         <div class="card shadow-sm mb-4">
@@ -90,7 +90,7 @@
                                             class="btn btn-sm btn-outline-primary" title="Exportar Excel">
                                             <i class="fas fa-download"></i>
                                         </a>
-                                    </td>   
+                                    </td>
 
                                 </tr>
                             @empty
@@ -191,6 +191,9 @@
                 </div>
             </div>
         @endforeach
+    </div>
+    <div class="d-flex justify-content-center">
+        {{ $docentes->links() }}
     </div>
 @endsection
 
