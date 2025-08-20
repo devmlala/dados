@@ -1,99 +1,111 @@
 @extends('laravel-usp-theme::master')
 
 @section('content')
-    <div class="container">
-        <h4 class="mb-4">Lattes: Docentes e seus Livros Publicados</h4>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Lattes: Livros Publicados por Docentes</h4>
 
-        <form method="get" class="mb-3">
-            <label for="limit">Quantidade:</label>
-            <input type="number" name="limit" value="{{ $limit }}" min="1" max="50"
-                class="form-control d-inline-block w-auto ms-2 me-2">
-            <button class="btn btn-primary btn-sm">Aplicar</button>
+        <!-- Filtro -->
+        <form method="get" class="form-inline">
+            <div class="input-group mr-2">
+                <input type="text" name="busca" value="{{ request('busca') }}" 
+                       class="form-control form-control-sm" placeholder="Nome do docente">
+            </div>
+            <button class="btn btn-primary btn-sm">
+                <i class="fas fa-filter"></i> Filtrar
+            </button>
         </form>
-
-        <table class="table table-bordered table-sm">
-            <thead>
-                <tr>
-                    <th>Docente</th>
-                    <th>Livros Publicados</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($docentes as $docente)
-                    @php
-                        $codpes = $docente['codpes'];
-                        $livrosDocente = $livrosPublicados[$codpes] ?? [];
-                    @endphp
-                    <tr>
-                        <td>
-                            <strong>{{ $docente['nompes'] }}</strong><br>
-                            <small>{{ $codpes }}</small>
-                        </td>
-                        <td>
-                            @if (!empty($livrosDocente))
-                                <h5 class="text-success fw-bold mb-3">
-                                    <i class="fas fa-layer-group me-1"></i>
-                                    Total de Livros: {{ count($livrosDocente) }}
-                                </h5>
-                                <ul>
-                                    @foreach ($livrosDocente as $livro)
-                                        <div class="card mb-2 p-2 shadow-sm border-start border-3 border-success">
-                                            <h6 class="mb-1">
-                                                <i class="fas fa-book text-success me-1"></i>
-                                                @php
-                                                    echo is_array($livro['TITULO-DO-LIVRO'] ?? null)
-                                                        ? implode_recursive(', ', $livro['TITULO-DO-LIVRO'])
-                                                        : ($livro['TITULO-DO-LIVRO'] ?? 'Sem título');
-                                                @endphp
-                                            </h6>
-                                            <div class="small text-muted">
-                                                <strong>Ano:</strong>
-                                                @php
-                                                    echo is_array($livro['ANO'] ?? null)
-                                                        ? implode_recursive(', ', $livro['ANO'])
-                                                        : ($livro['ANO'] ?? 'Sem ano');
-                                                @endphp
-                                                |
-                                                <strong>Editora:</strong>
-                                                @php
-                                                    echo is_array($livro['NOME-DA-EDITORA'] ?? null)
-                                                        ? implode_recursive(', ', $livro['NOME-DA-EDITORA'])
-                                                        : ($livro['NOME-DA-EDITORA'] ?? 'Editora desconhecida');
-                                                @endphp
-                                                |
-                                                <strong>Autores:</strong>
-                                                @php
-                                                    echo is_array($livro['AUTORES'] ?? null)
-                                                        ? implode_recursive(', ', $livro['AUTORES'])
-                                                        : ($livro['AUTORES'] ?? 'Autores não informados');
-                                                @endphp
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <em>Nenhum livro publicado encontrado.</em>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
     </div>
+
+    <!-- Lista de docentes -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="pl-4">Docente</th>
+                            <th class="text-center"><i class="fas fa-book text-success"></i> Livros Publicados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($docentes as $docente)
+                            @php
+                                $codpes = $docente['codpes'];
+                                $todosLivros = $livrosPublicados[$codpes] ?? [];
+                                $livrosLimitados = array_slice($todosLivros, 0, 5); // exibe só 5
+                            @endphp
+                            <tr class="border-bottom">
+                                <td class="pl-4 align-middle">
+                                    <strong>{{ $docente['nompes'] }}</strong>
+                                    <div class="small text-muted">{{ $codpes }}</div>
+                                </td>
+                                <td>
+                                    @if (!empty($todosLivros))
+                                        <h6 class="fw-bold text-success mb-2">
+                                            <i class="fas fa-book me-1"></i>
+                                            Total de Livros: {{ count($todosLivros) }}
+                                        </h6>
+
+                                        <ul class="list-unstyled" id="livros-{{ $codpes }}">
+                                            @foreach ($livrosLimitados as $livro)
+                                                <li class="card mb-2 p-2 shadow-sm border-start border-3 border-success">
+                                                    <h6 class="mb-1 text-success">
+                                                        <i class="fas fa-book me-1"></i>
+                                                        {{ implode_recursive(', ', $livro['TITULO-DO-LIVRO'] ?? 'Sem título') }}
+                                                    </h6>
+                                                    <div class="small text-muted">
+                                                        <strong>Ano:</strong> {{ implode_recursive(', ', $livro['ANO'] ?? 'Sem ano') }} |
+                                                        <strong>Editora:</strong> {{ implode_recursive(', ', $livro['NOME-DA-EDITORA'] ?? 'Desconhecida') }} |
+                                                        <strong>Autores:</strong> {{ implode_recursive(', ', $livro['AUTORES'] ?? 'Não informados') }}
+                                                    </div>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+
+                                        @if (count($todosLivros) > 5)
+                                            <button class="btn btn-link btn-sm p-0"
+                                                onclick="document.getElementById('livros-{{ $codpes }}').innerHTML = `{!! collect($todosLivros)->map(function($livro){ 
+                                                    return '<li class=\'card mb-2 p-2 shadow-sm border-start border-3 border-success\'><h6 class=\'mb-1 text-success\'><i class=\'fas fa-book me-1\'></i> '.e(implode_recursive(', ', $livro['TITULO-DO-LIVRO'] ?? 'Sem título')).'</h6><div class=\'small text-muted\'><strong>Ano:</strong> '.e(implode_recursive(', ', $livro['ANO'] ?? 'Sem ano')).' | <strong>Editora:</strong> '.e(implode_recursive(', ', $livro['NOME-DA-EDITORA'] ?? 'Desconhecida')).' | <strong>Autores:</strong> '.e(implode_recursive(', ', $livro['AUTORES'] ?? 'Não informados')).'</div></li>'; 
+                                                })->implode('') !!}`; this.remove();">
+                                                Ver todos os livros
+                                            </button>
+                                        @endif
+                                    @else
+                                        <em class="text-muted">Nenhum livro encontrado.</em>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2">
+                                    <div class="alert alert-warning mb-0 text-center">
+                                        Nenhum docente encontrado.
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paginação -->
+    <div class="d-flex justify-content-center">
+        {{ $docentes->appends(request()->query())->links() }}
+    </div>
+</div>
 @endsection
 
 @php
-    // Função helper para lidar com arrays multidimensionais
-    function implode_recursive($glue, $array)
-    {
-        $result = '';
-        foreach ($array as $item) {
-            if (is_array($item)) {
-                $result .= implode_recursive($glue, $item) . $glue;
-            } else {
-                $result .= $item . $glue;
-            }
+    /**
+     * Helper para transformar arrays (inclusive multidimensionais) em string
+     */
+    function implode_recursive($glue, $value) {
+        if (is_array($value)) {
+            return collect($value)->map(fn($item) => implode_recursive($glue, $item))->implode($glue);
         }
-        return rtrim($result, $glue);
+        return $value;
     }
 @endphp

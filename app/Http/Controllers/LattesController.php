@@ -86,39 +86,79 @@ class LattesController extends Controller
 
     public function artigos(Request $request)
     {
-        $limit = $request->input('limit', 3);
+        $limit = 5; // docentes por página
+        $busca = $request->input('busca');
+        $page = $request->input('page', 1);
 
+        // Lista todos os docentes
         $todosDocentes = Pessoa::listarDocentes();
-        $docentes = array_slice($todosDocentes, 0, $limit);
 
+        // Filtra por nome, se houver busca
+        if (!empty($busca)) {
+            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
+                return stripos($docente['nompes'], $busca) !== false;
+            });
+            $todosDocentes = array_values($todosDocentes); // reindexa
+        }
+
+        // Pagina docentes
+        $offset = ($page - 1) * $limit;
+        $docentesPagina = array_slice($todosDocentes, $offset, $limit);
+
+        // Busca artigos de cada docente da página atual
         $artigos = [];
-
-        foreach ($docentes as $docente) {
+        foreach ($docentesPagina as $docente) {
             $codpes = $docente['codpes'];
             $lattesArray = Lattes::obterArray($codpes);
 
             if ($lattesArray) {
-                // Pass -1 as the limit to remove internal article limit
                 $artigos[$codpes] = Lattes::listarArtigos($codpes, $lattesArray, 'registros', -1);
             } else {
                 $artigos[$codpes] = [];
             }
         }
 
+        // Cria paginator
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $docentesPagina,
+            count($todosDocentes),
+            $limit,
+            $page,
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
 
-        return view('lattes.docentes.artigos_docentes', compact('docentes', 'artigos', 'limit'));
+        return view('lattes.docentes.artigos_docentes', [
+            'docentes' => $paginator,
+            'artigos' => $artigos,
+            'busca' => $busca,
+            'limit' => $limit,
+        ]);
     }
 
     public function livrosPublicados(Request $request)
     {
-        $limit = $request->input('limit', 3);
+        $limit = $request->input('limit', 5); // docentes por página
+        $busca = $request->input('busca');
+        $page = $request->input('page', 1);
 
+        // Lista todos os docentes
         $todosDocentes = Pessoa::listarDocentes();
-        $docentes = array_slice($todosDocentes, 0, $limit);
 
+        // Filtra por nome, se houver busca
+        if (!empty($busca)) {
+            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
+                return stripos($docente['nompes'], $busca) !== false;
+            });
+            $todosDocentes = array_values($todosDocentes); // reindexa
+        }
+
+        // Pagina docentes
+        $offset = ($page - 1) * $limit;
+        $docentesPagina = array_slice($todosDocentes, $offset, $limit);
+
+        // Busca livros para os docentes da página atual
         $livrosPublicados = [];
-
-        foreach ($docentes as $docente) {
+        foreach ($docentesPagina as $docente) {
             $codpes = $docente['codpes'];
             $lattesArray = Lattes::obterArray($codpes);
 
@@ -129,33 +169,82 @@ class LattesController extends Controller
             }
         }
 
-        return view('lattes.docentes.livros_publicados_docentes', compact('docentes', 'livrosPublicados', 'limit'));
+        // Cria paginator
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $docentesPagina,
+            count($todosDocentes),
+            $limit,
+            $page,
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
+
+        return view('lattes.docentes.livros_publicados_docentes', [
+            'docentes' => $paginator,
+            'livrosPublicados' => $livrosPublicados,
+            'busca' => $busca,
+            'limit' => $limit,
+        ]);
     }
+
+
 
     public function projetosPesquisa(Request $request)
     {
-        $limit = $request->input('limit', 3);
+        $limit = $request->input('limit', 5); // docentes por página (padronizado com livros)
+        $busca = $request->input('busca');
+        $page = $request->input('page', 1);
 
+        // Lista todos os docentes
         $todosDocentes = Pessoa::listarDocentes();
-        $docentes = array_slice($todosDocentes, 0, $limit);
 
+        // Filtra por nome, se houver busca
+        if (!empty($busca)) {
+            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
+                return stripos($docente['nompes'], $busca) !== false;
+            });
+            $todosDocentes = array_values($todosDocentes); // reindexa
+        }
+
+        // Pagina docentes
+        $offset = ($page - 1) * $limit;
+        $docentesPagina = array_slice($todosDocentes, $offset, $limit);
+
+        // Busca projetos para os docentes da página atual
         $projetosPesquisa = [];
-
-        foreach ($docentes as $docente) {
+        foreach ($docentesPagina as $docente) {
             $codpes = $docente['codpes'];
             $lattesArray = Lattes::obterArray($codpes);
 
             if ($lattesArray) {
-                $projetosPesquisa[$codpes] = Lattes::listarProjetosPesquisa($codpes, $lattesArray);
+                try {
+                    $lista = Lattes::listarProjetosPesquisa($codpes, $lattesArray);
+                    $projetosPesquisa[$codpes] = is_array($lista) ? $lista : [];
+                } catch (\Throwable $e) {
+                    \Log::warning("Erro ao listar projetos para {$codpes}: " . $e->getMessage());
+                    $projetosPesquisa[$codpes] = [];
+                }
             } else {
                 $projetosPesquisa[$codpes] = [];
             }
         }
 
-        //dd($projetosPesquisa);
+        // Cria paginator
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $docentesPagina,
+            count($todosDocentes),
+            $limit,
+            $page,
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
 
-        return view('lattes.docentes.projetos_pesquisa_docentes', compact('docentes', 'projetosPesquisa', 'limit'));
+        return view('lattes.docentes.projetos_pesquisa_docentes', [
+            'docentes' => $paginator,
+            'projetosPesquisa' => $projetosPesquisa,
+            'busca' => $busca,
+            'limit' => $limit,
+        ]);
     }
+
 
     public function curriculo(Request $request)
     {

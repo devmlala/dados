@@ -28,7 +28,6 @@
                     ['name' => 'Projetos de Pesquisa', 'url' => '/lattes/projetos-pesquisa'],
                     ['name' => 'Currículo Completo', 'url' => '/lattes/curriculo'],
                     ['name' => 'Dashboard Geral', 'url' => '/lattes/dashboard'],
-                    ['name' => 'Exportar Todos os Dados', 'url' => '/lattes/exportar/todos'],
                 ]
             ],
             [
@@ -39,8 +38,6 @@
                     ['name' => 'Concatenar Disciplinas', 'url' => '/turmas/prefix/concatenate', 'api' => '/api/disciplinas/concatenate'],
                 ]
             ],
-
-
         ];
     @endphp
 
