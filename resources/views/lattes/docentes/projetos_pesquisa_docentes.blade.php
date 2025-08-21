@@ -36,15 +36,14 @@
                                 $projetosLimitados = array_slice($todosProjetos, 0, 5);
                             @endphp
                             <tr class="border-bottom">
-                                <td class="pl-4">
+                                <td class="pl-4 align-middle">
                                     <strong>{{ $docente['nompes'] }}</strong>
-                                    <div class="small text-muted">{{ $codpes }}</div>
                                 </td>
                                 <td>
                                     @if(!empty($todosProjetos))
                                         <h6 class="fw-bold text-primary mb-2">
                                             <i class="fas fa-flask me-1"></i>
-                                            Total: {{ count($todosProjetos) }} projetos
+                                            Total de Projetos: {{ count($todosProjetos) }}
                                         </h6>
 
                                         <ul class="list-unstyled" id="projetos-{{ $codpes }}">
@@ -52,39 +51,46 @@
                                                 <li class="card mb-2 p-2 shadow-sm border-start border-3 border-primary">
                                                     <h6 class="mb-1 text-primary">
                                                         <i class="fas fa-flask me-1"></i>
-                                                        {!! e(implode_recursive(', ', $projeto['NOME-DO-PROJETO'] ?? 'Sem título')) !!}
+                                                        {{ implode_recursive(', ', $projeto['NOME-DO-PROJETO'] ?? 'Sem título') }}
                                                     </h6>
                                                     <div class="small text-muted">
-                                                        <strong>Ano de Início:</strong> {!! e(implode_recursive(', ', $projeto['ANO-INICIO'] ?? 'Desconhecido')) !!} |
-                                                        <strong>Situação:</strong> {!! e(implode_recursive(', ', str_replace('_',' ', ucfirst(strtolower($projeto['SITUACAO'] ?? 'Desconhecida'))))) !!} |
-                                                        <strong>Natureza:</strong> {!! e(implode_recursive(', ', $projeto['NATUREZA'] ?? 'Não informada')) !!}
+                                                        <strong>Ano de Início:</strong> {{ implode_recursive(', ', $projeto['ANO-INICIO'] ?? 'Desconhecido') }} |
+                                                        <strong>Situação:</strong> {{ implode_recursive(', ', str_replace('_',' ', ucfirst(strtolower($projeto['SITUACAO'] ?? 'Desconhecida')))) }} |
+                                                        <strong>Natureza:</strong> {{ implode_recursive(', ', $projeto['NATUREZA'] ?? 'Não informada') }}
                                                     </div>
                                                     @if(!empty($projeto['DESCRICAO-DO-PROJETO']))
                                                         <p class="small mt-1">
-                                                            {!! e(Str::limit(strip_tags($projeto['DESCRICAO-DO-PROJETO']),200)) !!}
+                                                            {{ \Illuminate\Support\Str::limit(strip_tags(implode_recursive(', ', $projeto['DESCRICAO-DO-PROJETO'])), 200) }}
                                                         </p>
                                                     @endif
                                                 </li>
                                             @endforeach
                                         </ul>
 
+                                        {{-- Botão para mostrar todos os projetos --}}
                                         @if(count($todosProjetos) > 5)
                                             @php
                                                 $todosProjetosHtml = collect($todosProjetos)->map(function($projeto){
-                                                    $titulo = implode_recursive(', ', $projeto['NOME-DO-PROJETO'] ?? 'Sem título');
-                                                    $ano = implode_recursive(', ', $projeto['ANO-INICIO'] ?? 'Desconhecido');
-                                                    $situacao = implode_recursive(', ', str_replace('_', ' ', ucfirst(strtolower($projeto['SITUACAO'] ?? 'Desconhecida'))));
-                                                    $natureza = implode_recursive(', ', $projeto['NATUREZA'] ?? 'Não informada');
-                                                    $descricao = !empty($projeto['DESCRICAO-DO-PROJETO']) ? '<p class="small mt-1">'.e(Str::limit(strip_tags($projeto['DESCRICAO-DO-PROJETO']),200)).'</p>' : '';
-                                                    return "<li class='card mb-2 p-2 shadow-sm border-start border-3 border-primary'>
-                                                                <h6 class='mb-1 text-primary'><i class='fas fa-flask me-1'></i> {$titulo}</h6>
-                                                                <div class='small text-muted'>
-                                                                    <strong>Ano de Início:</strong> {$ano} |
-                                                                    <strong>Situação:</strong> {$situacao} |
-                                                                    <strong>Natureza:</strong> {$natureza}
-                                                                </div>
-                                                                {$descricao}
-                                                            </li>";
+                                                    $titulo = e(implode_recursive(', ', $projeto['NOME-DO-PROJETO'] ?? 'Sem título'));
+                                                    $ano = e(implode_recursive(', ', $projeto['ANO-INICIO'] ?? 'Desconhecido'));
+                                                    $situacao = e(implode_recursive(', ', str_replace('_', ' ', ucfirst(strtolower($projeto['SITUACAO'] ?? 'Desconhecida')))));
+                                                    $natureza = e(implode_recursive(', ', $projeto['NATUREZA'] ?? 'Não informada'));
+                                                    $descricao = '';
+                                                    if (!empty($projeto['DESCRICAO-DO-PROJETO'])) {
+                                                        $descricaoText = \Illuminate\Support\Str::limit(strip_tags(implode_recursive(', ', $projeto['DESCRICAO-DO-PROJETO'])), 200);
+                                                        $descricao = "<p class='small mt-1'>".e($descricaoText)."</p>";
+                                                    }
+                                                    return "
+                                                        <li class='card mb-2 p-2 shadow-sm border-start border-3 border-primary'>
+                                                            <h6 class='mb-1 text-primary'><i class='fas fa-flask me-1'></i> {$titulo}</h6>
+                                                            <div class='small text-muted'>
+                                                                <strong>Ano de Início:</strong> {$ano} |
+                                                                <strong>Situação:</strong> {$situacao} |
+                                                                <strong>Natureza:</strong> {$natureza}
+                                                            </div>
+                                                            {$descricao}
+                                                        </li>
+                                                    ";
                                                 })->implode('');
                                             @endphp
 
@@ -93,15 +99,14 @@
                                                 Ver todos os projetos
                                             </button>
                                         @endif
-                                    @else
-                                        <em class="text-muted">Nenhum projeto encontrado.</em>
+
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="2">
-                                    <div class="alert alert-warning mb-0">
+                                    <div class="alert alert-warning mb-0 text-center">
                                         Nenhum docente encontrado.
                                     </div>
                                 </td>
@@ -121,17 +126,13 @@
 @endsection
 
 @php
-    /**
-     * Helper para transformar arrays (inclusive multidimensionais) em string
-     */
-    function implode_recursive($glue, $value) {
-        if (is_array($value)) {
-            $result = '';
-            foreach ($value as $item) {
-                $result .= implode_recursive($glue, $item) . $glue;
-            }
-            return rtrim($result, $glue);
-        }
-        return $value;
+/**
+ * Helper recursivo para transformar arrays em strings
+ */
+function implode_recursive($glue, $value) {
+    if (is_array($value)) {
+        return collect($value)->map(fn($item) => implode_recursive($glue, $item))->implode($glue);
     }
+    return $value;
+}
 @endphp

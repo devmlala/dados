@@ -38,7 +38,6 @@
                             <tr class="border-bottom">
                                 <td class="pl-4 align-middle">
                                     <strong>{{ $docente['nompes'] }}</strong>
-                                    <div class="small text-muted">{{ $codpes }}</div>
                                 </td>
                                 <td>
                                     @if (!empty($todosLivros))
