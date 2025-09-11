@@ -21,27 +21,17 @@
                 ]
             ],
             [
-                'title' => 'Produção Acadêmica - Lattes',
-                'items' => [
-                    ['name' => 'Artigos Publicados', 'url' => '/lattes/docentes/artigos'],
-                    ['name' => 'Livros Publicados', 'url' => '/lattes/livros-publicados'],
-                    ['name' => 'Projetos de Pesquisa', 'url' => '/lattes/projetos-pesquisa'],
-                    ['name' => 'Currículo Completo', 'url' => '/lattes/curriculo'],
-                    ['name' => 'Dashboard Geral', 'url' => '/lattes/dashboard'],
-                    ['name' => 'Exportar Todos os Dados', 'url' => '/lattes/exportar/todos'],
-                ]
-            ],
-            [
                 'title' => 'Dados de Disciplinas',
                 'items' => [
                     ['name' => 'Turmas', 'url' => '/turmas', 'api' => '/api/disciplinas/turmas'],
-                    ['name' => 'Disciplinas por Prefixo', 'url' => '/turmas/prefix', 'api' => '/api/disciplinas/prefix'],
-                    ['name' => 'Concatenar Disciplinas', 'url' => '/turmas/prefix/concatenate', 'api' => '/api/disciplinas/concatenate'],
                 ]
             ],
-
-
         ];
+    @endphp
+        
+
+    @php
+        
     @endphp
 
     @foreach ($sections as $key => $section)
