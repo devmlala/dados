@@ -27,7 +27,6 @@ Route::get('/restrito/intercambitas/recebidos', [IntercambistasController::class
 
     
 use App\Http\Controllers\DisciplinaController;
-
 Route::get('/turmas', [DisciplinaController::class, 'turmas']);
 Route::get('/turmas/{prefix}', [DisciplinaController::class, 'prefix']);
 Route::get('/turmas/{prefix}/concatenate', [DisciplinaController::class, 'concatenate']);
