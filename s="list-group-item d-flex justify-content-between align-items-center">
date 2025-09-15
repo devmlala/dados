@@ -1,0 +1,60 @@
+[1mdiff --git a/resources/views/index.blade.php b/resources/views/index.blade.php[m
+[1mindex a25e6e6..16e584f 100644[m
+[1m--- a/resources/views/index.blade.php[m
+[1m+++ b/resources/views/index.blade.php[m
+[36m@@ -12,29 +12,16 @@[m
+ [m
+ <div class="accordion" id="accordionExample">[m
+     @php[m
+[31m-        $lastYear = date('Y') - 1;[m
+[31m-        $sections = [[m
+[31m-            [[m
+[31m-                'title' => 'Dados institucionais', [m
+[31m-                'items' => [[m
+[31m-                    ['name' => 'Colegiados', 'url' => '/colegiados', 'api' => '/api/colegiados'],[m
+[31m-                ][m
+[31m-            ],[m
+[31m-            [[m
+[31m-                'title' => 'Dados de Disciplinas',[m
+[31m-                'items' => [[m
+[31m-                    ['name' => 'Turmas', 'url' => '/turmas', 'api' => '/api/disciplinas/turmas'],[m
+[31m-                ][m
+[31m-            ],[m
+[31m-        ];[m
+[32m+[m[32m        $lastYear = date('Y') - 1; // Cálculo do último ano[m
+     @endphp[m
+[31m-        [m
+[31m-[m
+[31m-    @php[m
+[31m-        [m
+[31m-    @endphp[m
+[31m-[m
+[31m-    @foreach ($sections as $key => $section)[m
+[32m+[m[32m    @foreach ([[m
+[32m+[m[32m        [[m
+[32m+[m[32m            'title' => 'Dados institucionais',[m[41m [m
+[32m+[m[32m            'items' => [[m
+[32m+[m[32m                ['name' => 'Colegiados', 'url' => '/colegiados', 'api' => '/api/colegiados'][m
+[32m+[m[32m            ][m
+[32m+[m[32m        ],[m
+[32m+[m[32m    ] as $key => $section)[m
+         <div class="card">[m
+             <div class="card-header" id="heading{{ $key }}">[m
+                 <h2 class="mb-0">[m
+[36m@@ -48,11 +35,13 @@[m
+                 <div class="card-body">[m
+                     <ul class="list-group">[m
+                         @foreach ($section['items'] as $item)[m
+[31m-                            <li class="list-group-item d-flex justify-content-between align-items-center">[m
+[32m+[m[32m                            <li class="list-group-item">[m
+                                 <a href="{{ config('app.url') }}{{ $item['url'] }}">{{ $item['name'] }}</a>[m
+                                 @if(isset($item['api']))[m
+[31m-                                    <a href="{{ config('app.url') }}{{ $item['api'] }}" class="export-json ml-2" data-toggle="tooltip" title="Exportar em JSON">[m
+[31m-                                        <img width="20" src="{{ asset('assets/img/json_icon.png') }}">[m
+[32m+[m[32m                                    <a href="{{ config('app.url') }}{{ $item['api'] }}" class="export-json">[m
+[32m+[m[32m                                        <span data-toggle="tooltip" data-placement="left" title="Exportar em JSON" role="button">[m
+[32m+[m[32m                                            <img width="20" src="{{ asset('assets/img/json_icon.png') }}">[m
+[32m+[m[32m                                        </span>[m
+                                     </a>[m
+                                 @endif[m
+                             </li>[m
