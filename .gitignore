@@ -1,5 +1,6 @@
 /node_modules
-/vendor
+/vendor/
+/public/vendor/
 .env
 .phpunit.result.cache
 storage/*.key
@@ -7,6 +8,7 @@ storage/*.key
 *.bak
 *.swp
 *.swo
-('laravel-usp-theme::master')
-as $docente)
-s=\"*
+*.log
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
