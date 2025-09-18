@@ -212,8 +212,13 @@ class LattesMetricsService
             $codpes = $docente['codpes'];
             $metricas = $this->getMetricasDetalhadas($codpes);
 
+            // Fetch department
+            $departamentos = \App\Utils\ReplicadoTemp::obterVinculo($codpes);
+            $departamentos = is_array($departamentos) ? $departamentos : [$departamentos];
+
             $resultado[] = [
                 'docente' => $docente,
+                'departamentos' => $departamentos,
                 'artigos' => $metricas['artigos'],
                 'livros' => $metricas['livros'],
                 'capitulosLivros' => $metricas['capitulosLivros'],

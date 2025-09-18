@@ -29,28 +29,36 @@ class LattesController extends Controller
     public function dashboard(Request $request)
     {
         $limit = 5;
-        $busca = $request->input('busca'); // captura o texto da busca
+        $busca = $request->input('busca'); // Captures the search text
         $page = $request->input('page', 1);
 
-        // Lista todos os docentes
+        // List all docentes
         $todosDocentes = Pessoa::listarDocentes();
 
-        // Filtra por nome, se houver busca
+        // Filter by name, if a search query exists
         if (!empty($busca)) {
             $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
                 return stripos($docente['nompes'], $busca) !== false;
             });
-            $todosDocentes = array_values($todosDocentes); // reindexa o array
+            $todosDocentes = array_values($todosDocentes); // Reindex the array
         }
 
-        // Pagina os resultados
+        // Paginate the results
         $offset = ($page - 1) * $limit;
         $docentesPagina = array_slice($todosDocentes, $offset, $limit);
 
-        // Obtém as métricas dos docentes da página atual
+        // Fetch metrics and department for each docente
         $docentesComMetricas = $this->metricsService->getDocentesComMetricasParaLista($docentesPagina);
 
-        // Cria um paginator manual
+        foreach ($docentesComMetricas as &$docente) {
+            $codpes = $docente['docente']['codpes'];
+            $departamentos = \App\Utils\ReplicadoTemp::obterVinculo($codpes);
+
+            // Ensure $departamentos is an array
+            $docente['departamentos'] = is_array($departamentos) ? $departamentos : [$departamentos];
+        }
+
+        // Create a manual paginator
         $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             $docentesComMetricas,
             count($todosDocentes),
