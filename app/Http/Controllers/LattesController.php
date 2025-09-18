@@ -52,9 +52,11 @@ class LattesController extends Controller
 
         foreach ($docentesComMetricas as &$docente) {
             $codpes = $docente['docente']['codpes'];
-            $departamentos = \App\Utils\ReplicadoTemp::obterVinculo($codpes);
 
-            // Ensure $departamentos is an array
+            // Fetch department using listarVinculosSetores
+            $departamentos = Pessoa::listarVinculosSetores($codpes);
+
+            // Ensure $departamentos is an array and store it in the docente array
             $docente['departamentos'] = is_array($departamentos) ? $departamentos : [$departamentos];
         }
 
