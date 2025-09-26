@@ -16,6 +16,7 @@ class LattesMetricsService
     {
         $todosDocentes = Pessoa::listarDocentes();
         $docentes = array_slice($todosDocentes, 0, $limit);
+        
 
         $resultado = [];
 
@@ -202,39 +203,5 @@ class LattesMetricsService
             'ultimaAtualizacao' => null,
         ];
     }
-
-    // App\Services\LattesMetricsService.php
-    public function getDocentesComMetricasParaLista(array $docentes): array
-    {
-        $resultado = [];
-
-        foreach ($docentes as $docente) {
-            $codpes = $docente['codpes'];
-            $metricas = $this->getMetricasDetalhadas($codpes);
-
-            // Fetch department
-            $departamentos = \App\Utils\ReplicadoTemp::obterVinculo($codpes);
-            $departamentos = is_array($departamentos) ? $departamentos : [$departamentos];
-
-            $resultado[] = [
-                'docente' => $docente,
-                'departamentos' => $departamentos,
-                'artigos' => $metricas['artigos'],
-                'livros' => $metricas['livros'],
-                'capitulosLivros' => $metricas['capitulosLivros'],
-                'projetos' => $metricas['projetos'],
-                'orientacoesIC' => $metricas['orientacoesIC'],
-                'orientacoesConcluidasDoc' => $metricas['orientacoesConcluidasDoc'],
-                'orientacoesMestrado' => $metricas['orientacoesMestrado'],
-                'premios' => $metricas['premios'] ?? [],
-                'contagem' => $metricas['contagem'],
-                'ultimaAtualizacao' => $metricas['ultimaAtualizacao'],
-                'resumoCV' => $metricas['resumoCV'] ?? '',
-            ];
-        }
-
-        return $resultado;
-    }
-
 
 }

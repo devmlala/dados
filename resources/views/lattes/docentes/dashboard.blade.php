@@ -20,38 +20,32 @@
             </div>
         </div>
 
-        <form method="get" class="form-inline mb-3">
-            <div class="input-group">
-                <input type="text" name="busca" value="{{ request('busca') }}" class="form-control form-control-sm"
-                    placeholder="Nome do docente">
-                <button class="btn btn-primary btn-sm">
-                    <i class="fas fa-search"></i> Filtrar
-                </button>
+        <form method="GET" action="{{ route('lattes.dashboard') }}" class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="busca"><b>Busca por Nome:</b></label>
+                            <input type="text" name="busca" id="busca" value="{{ $busca }}" class="form-control" placeholder="Digite o nome do docente">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @php $departamentos = \App\Utils\Util::getDepartamentos(); @endphp
+                        <div class="form-group">
+                            <label for="departamento"><b>Filtro por Departamento:</b></label>
+                            <select name="departamento" id="departamento" class="form-control">
+                                <option value="">-- Todos os Departamentos --</option>
+                                @foreach($departamentos as $sigla => $dados)
+                                    <option value="{{ $dados[1] }}" {{ ($departamento_filtro == $dados[1]) ? 'selected' : '' }}>{{ $dados[1] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2"><i class="fas fa-filter"></i> Aplicar Filtros</button>
+                <a href="{{ route('lattes.dashboard') }}" class="btn btn-outline-secondary mt-2">Limpar Filtros</a>
             </div>
         </form>
-
-
-
-        <div class="card-body">
-                <form method="GET" action="">
-                    @php
-                        $departamentos = \App\Utils\Util::getDepartamentos();
-                    @endphp
-                    <div class="form-group">
-                        <label for="departamento">Departamento:</label>
-                        <select name="departamento" id="departamento" class="form-control" required>
-                            <option value="" disabled selected>Selecione um departamento</option>
-                            @foreach($departamentos as $sigla => $dados)
-                                <option value="{{ $sigla }}">{{ $dados[1] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Enviar</button>
-                </form>
-            </div>
-
-
-
 
         <div class="card shadow-sm mb-4">
             <div class="card-body p-0">

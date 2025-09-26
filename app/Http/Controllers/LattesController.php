@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\LattesMetricsService;
 use Uspdev\Replicado\Pessoa;
 use Uspdev\Replicado\Lattes;
+use Illuminate\Support\Facades\Cache;
 
 use App\Exports\DocenteExport;
 use App\Exports\DocenteDetalhadoExport;
@@ -30,17 +31,33 @@ class LattesController extends Controller
     {
         $limit = 5;
         $busca = $request->input('busca'); // Captures the search text
+        $departamento_filtro = $request->input('departamento'); // Captura o departamento do filtro
         $page = $request->input('page', 1);
 
         // List all docentes
-        $todosDocentes = Pessoa::listarDocentes();
+        $todosDocentes = Pessoa::listarDocentes(null, 'A'); // Apenas ativos
 
         // Filter by name, if a search query exists
         if (!empty($busca)) {
             $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
-                return stripos($docente['nompes'], $busca) !== false;
+                return stripos(utf8_encode($docente['nompes'] ?? ''), $busca) !== false;
             });
             $todosDocentes = array_values($todosDocentes); // Reindex the array
+        }
+
+        // Filtra por departamento, se um foi selecionado
+        if (!empty($departamento_filtro)) {
+            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($departamento_filtro) {
+                // Otimização: busca e cacheia os departamentos somente durante o filtro.
+                $departamentos = Cache::remember("docente_vinculos_nomes_{$docente['codpes']}", now()->addHours(24), function () use ($docente) {
+                    $vinculos = Pessoa::listarVinculosAtivos($docente['codpes'], false);
+                    if (!is_array($vinculos)) return [];
+                    $nomes = array_values(array_unique(array_filter(array_column($vinculos, 'nomset'))));
+                    return array_map('utf8_encode', $nomes);
+                });
+                return in_array($departamento_filtro, $departamentos);
+            });
+            $todosDocentes = array_values($todosDocentes); // Reindexa o array
         }
 
         // Paginate the results
@@ -48,18 +65,26 @@ class LattesController extends Controller
         $docentesPagina = array_slice($todosDocentes, $offset, $limit);
 
         // Fetch metrics and department for each docente
-        $docentesComMetricas = $this->metricsService->getDocentesComMetricasParaLista($docentesPagina);
+        $docentesComMetricas = [];
+        foreach ($docentesPagina as $docente) {
+            $metricas = $this->metricsService->getMetricasDetalhadas($docente['codpes']);
+            $docente['nompes'] = utf8_encode($docente['nompes'] ?? '');
+            
+            // Otimização: Busca e cacheia os departamentos apenas para os docentes da página atual.
+            $departamentos = Cache::remember("docente_vinculos_nomes_{$docente['codpes']}", now()->addHours(24), function () use ($docente) {
+                $vinculos = Pessoa::listarVinculosAtivos($docente['codpes'], false);
+                if (!is_array($vinculos)) return [];
+                $nomes = array_values(array_unique(array_filter(array_column($vinculos, 'nomset'))));
+                return array_map('utf8_encode', $nomes);
+            });
 
-        foreach ($docentesComMetricas as &$docente) {
-            $codpes = $docente['docente']['codpes'];
-
-            // Fetch department using listarVinculosSetores
-            $departamentos = Pessoa::listarVinculosSetores($codpes);
-
-            // Ensure $departamentos is an array and store it in the docente array
-            $docente['departamentos'] = is_array($departamentos) ? $departamentos : [$departamentos];
+            $docentesComMetricas[] = array_merge($metricas, [
+                'docente' => $docente,
+                'departamentos' => $departamentos,
+            ]);
         }
 
+        
         // Create a manual paginator
         $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             $docentesComMetricas,
@@ -73,6 +98,7 @@ class LattesController extends Controller
             'docentes' => $paginator,
             'limit' => $limit,
             'busca' => $busca,
+            'departamento_filtro' => $departamento_filtro,
         ]);
     }
 
@@ -93,168 +119,6 @@ class LattesController extends Controller
         $limit = $request->input('limit', 10);
         return response()->json($this->metricsService->getDocentesComMetricas($limit));
     }
-
-    public function artigos(Request $request)
-    {
-        $limit = 5; // docentes por página
-        $busca = $request->input('busca');
-        $page = $request->input('page', 1);
-
-        // Lista todos os docentes
-        $todosDocentes = Pessoa::listarDocentes();
-
-        // Filtra por nome, se houver busca
-        if (!empty($busca)) {
-            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
-                return stripos($docente['nompes'], $busca) !== false;
-            });
-            $todosDocentes = array_values($todosDocentes); // reindexa
-        }
-
-        // Pagina docentes
-        $offset = ($page - 1) * $limit;
-        $docentesPagina = array_slice($todosDocentes, $offset, $limit);
-
-        // Busca artigos de cada docente da página atual
-        $artigos = [];
-        foreach ($docentesPagina as $docente) {
-            $codpes = $docente['codpes'];
-            $lattesArray = Lattes::obterArray($codpes);
-
-            if ($lattesArray) {
-                $artigos[$codpes] = Lattes::listarArtigos($codpes, $lattesArray, 'registros', -1);
-            } else {
-                $artigos[$codpes] = [];
-            }
-        }
-
-        // Cria paginator
-        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
-            $docentesPagina,
-            count($todosDocentes),
-            $limit,
-            $page,
-            ['path' => url()->current(), 'query' => $request->query()]
-        );
-
-        return view('lattes.docentes.artigos_docentes', [
-            'docentes' => $paginator,
-            'artigos' => $artigos,
-            'busca' => $busca,
-            'limit' => $limit,
-        ]);
-    }
-
-    public function livrosPublicados(Request $request)
-    {
-        $limit = $request->input('limit', 5); // docentes por página
-        $busca = $request->input('busca');
-        $page = $request->input('page', 1);
-
-        // Lista todos os docentes
-        $todosDocentes = Pessoa::listarDocentes();
-
-        // Filtra por nome, se houver busca
-        if (!empty($busca)) {
-            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
-                return stripos($docente['nompes'], $busca) !== false;
-            });
-            $todosDocentes = array_values($todosDocentes); // reindexa
-        }
-
-        // Pagina docentes
-        $offset = ($page - 1) * $limit;
-        $docentesPagina = array_slice($todosDocentes, $offset, $limit);
-
-        // Busca livros para os docentes da página atual
-        $livrosPublicados = [];
-        foreach ($docentesPagina as $docente) {
-            $codpes = $docente['codpes'];
-            $lattesArray = Lattes::obterArray($codpes);
-
-            if ($lattesArray) {
-                $livrosPublicados[$codpes] = Lattes::listarLivrosPublicados($codpes, $lattesArray, 'registros', -1);
-            } else {
-                $livrosPublicados[$codpes] = [];
-            }
-        }
-
-        // Cria paginator
-        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
-            $docentesPagina,
-            count($todosDocentes),
-            $limit,
-            $page,
-            ['path' => url()->current(), 'query' => $request->query()]
-        );
-
-        return view('lattes.docentes.livros_publicados_docentes', [
-            'docentes' => $paginator,
-            'livrosPublicados' => $livrosPublicados,
-            'busca' => $busca,
-            'limit' => $limit,
-        ]);
-    }
-
-
-
-    public function projetosPesquisa(Request $request)
-    {
-        $limit = $request->input('limit', 5); // docentes por página (padronizado com livros)
-        $busca = $request->input('busca');
-        $page = $request->input('page', 1);
-
-        // Lista todos os docentes
-        $todosDocentes = Pessoa::listarDocentes();
-
-        // Filtra por nome, se houver busca
-        if (!empty($busca)) {
-            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
-                return stripos($docente['nompes'], $busca) !== false;
-            });
-            $todosDocentes = array_values($todosDocentes); // reindexa
-        }
-
-        // Pagina docentes
-        $offset = ($page - 1) * $limit;
-        $docentesPagina = array_slice($todosDocentes, $offset, $limit);
-
-        // Busca projetos para os docentes da página atual
-        $projetosPesquisa = [];
-        foreach ($docentesPagina as $docente) {
-            $codpes = $docente['codpes'];
-            $lattesArray = Lattes::obterArray($codpes);
-
-            if ($lattesArray) {
-                try {
-                    $lista = Lattes::listarProjetosPesquisa($codpes, $lattesArray);
-                    $projetosPesquisa[$codpes] = is_array($lista) ? $lista : [];
-                } catch (\Throwable $e) {
-                    \Log::warning("Erro ao listar projetos para {$codpes}: " . $e->getMessage());
-                    $projetosPesquisa[$codpes] = [];
-                }
-            } else {
-                $projetosPesquisa[$codpes] = [];
-            }
-        }
-
-        // Cria paginator
-        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
-            $docentesPagina,
-            count($todosDocentes),
-            $limit,
-            $page,
-            ['path' => url()->current(), 'query' => $request->query()]
-        );
-
-        return view('lattes.docentes.projetos_pesquisa_docentes', [
-            'docentes' => $paginator,
-            'projetosPesquisa' => $projetosPesquisa,
-            'busca' => $busca,
-            'limit' => $limit,
-        ]);
-    }
-
 
     public function curriculo(Request $request)
     {
@@ -291,5 +155,94 @@ class LattesController extends Controller
         ]);
     }
 
+    public function artigos(Request $request)
+    {
+        $callback = function ($codpes, $lattesArray) {
+            return Lattes::listarArtigos($codpes, $lattesArray, 'registros', -1);
+        };
+
+        return $this->processarPaginaLattes(
+            $request,
+            'lattes.docentes.artigos_docentes',
+            'artigos',
+            $callback
+        );
+    }
+
+    public function livrosPublicados(Request $request)
+    {
+        $callback = function ($codpes, $lattesArray) {
+            return Lattes::listarLivrosPublicados($codpes, $lattesArray, 'registros', -1);
+        };
+
+        return $this->processarPaginaLattes(
+            $request,
+            'lattes.docentes.livros_publicados_docentes',
+            'livrosPublicados',
+            $callback
+        );
+    }
+
+    public function projetosPesquisa(Request $request)
+    {
+        $callback = function ($codpes, $lattesArray) {
+            try {
+                $lista = Lattes::listarProjetosPesquisa($codpes, $lattesArray);
+                return is_array($lista) ? $lista : [];
+            } catch (\Throwable $e) {
+                \Log::warning("Erro ao listar projetos para {$codpes}: " . $e->getMessage());
+                return [];
+            }
+        };
+
+        return $this->processarPaginaLattes(
+            $request,
+            'lattes.docentes.projetos_pesquisa_docentes',
+            'projetosPesquisa',
+            $callback
+        );
+    }
+
+    private function processarPaginaLattes(Request $request, string $view, string $dataKey, callable $fetchDataCallback)
+    {
+        $limit = $request->input('limit', 5);
+        $busca = $request->input('busca');
+        $page = $request->input('page', 1);
+
+        // Lista todos os docentes (apenas ativos para consistência com o dashboard)
+        $todosDocentes = Pessoa::listarDocentes(null, 'A');
+
+        // Filtra por nome, se houver busca (com correção de encoding)
+        if (!empty($busca)) {
+            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
+                return stripos(utf8_encode($docente['nompes']), $busca) !== false;
+            });
+            $todosDocentes = array_values($todosDocentes); // reindexa
+        }
+
+        // Pagina docentes
+        $offset = ($page - 1) * $limit;
+        $docentesPagina = array_slice($todosDocentes, $offset, $limit);
+
+        // Busca os dados específicos (artigos, livros, etc.) para cada docente da página
+        $dados = [];
+        foreach ($docentesPagina as &$docente) {
+            $docente['nompes'] = utf8_encode($docente['nompes']); // Garante encoding do nome
+            $codpes = $docente['codpes'];
+            $lattesArray = Lattes::obterArray($codpes);
+            $dados[$codpes] = $lattesArray ? $fetchDataCallback($codpes, $lattesArray) : [];
+        }
+
+        // Cria paginator manual
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $docentesPagina,
+            count($todosDocentes),
+            $limit,
+            $page,
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
+
+        return view($view, ['docentes' => $paginator, $dataKey => $dados, 'busca' => $busca, 'limit' => $limit]);
+    }
 
 }
