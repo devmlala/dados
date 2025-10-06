@@ -1,14 +1,36 @@
-/node_modules
+# Dependencies
+/node_modules/
 /vendor/
-/public/vendor/
+
+# Environment
 .env
+.env.*.local
+
+# Laravel
 .phpunit.result.cache
 storage/*.key
-*.tmp
-*.bak
+storage/framework/(cache|sessions|views)/
+bootstrap/cache/
+
+# Logs
+*.log
+storage/logs/
+
+# IDE & Local config
+.cursor/
+.vscode/
+.mcp.json
+.junie/
 *.swp
 *.swo
-*.log
-storage/framework/cache/
-storage/framework/sessions/
-storage/framework/views/
+*~
+*.tmp
+*.bak
+
+# System
+.DS_Store
+
+# Documentation local
+AGENTS.md
+CLAUDE.md
+.github/copilot-instructions.md
