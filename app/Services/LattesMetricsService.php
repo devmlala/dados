@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use Uspdev\Replicado\Lattes;
+use App\Services\Replicado\Lattes as LattesService;
+
 use Uspdev\Replicado\Pessoa;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +18,6 @@ class LattesMetricsService
     {
         $todosDocentes = Pessoa::listarDocentes();
         $docentes = array_slice($todosDocentes, 0, $limit);
-        
 
         $resultado = [];
 
@@ -123,6 +124,9 @@ class LattesMetricsService
         $orientacoesIC = Lattes::listarOrientacoesConcluidasIC($codpes, $lattesArray, 'registros', -1);
         $orientacoesIC = is_array($orientacoesIC) ? $orientacoesIC : [];
 
+        $eventos = LattesService::listarParticipacaoEventos($codpes, $lattesArray, 'registros', -1);
+        $eventos = is_array($eventos) ? $eventos : [];
+
         $premios = Lattes::listarPremios($codpes, $lattesArray);
         $premios = is_array($premios) ? $premios : [];
 
@@ -152,6 +156,7 @@ class LattesMetricsService
             'orientacoes-concluidas-mestrado' => count($orientacoesMestrado),
             'orientacoes-concluidas-pos-doutorado' => count($orientacoesPosDoc),
             'orientacoes-concluidas-ic' => count($orientacoesIC),
+            'eventos' => count($eventos),
             'premios' => count($premios),
             //'ultima-atualizacao' => $ultimaAtualizacao,
         ];
@@ -179,6 +184,7 @@ class LattesMetricsService
             'premios',
             'organizacaoEventos',
             'materialDidatico',
+            'eventos',
             'resumoCV',
             'ultimaAtualizacao',
             'orcid',
@@ -203,5 +209,34 @@ class LattesMetricsService
             'ultimaAtualizacao' => null,
         ];
     }
+
+    // App\Services\LattesMetricsService.php
+    public function getDocentesComMetricasParaLista(array $docentes): array
+    {
+        $resultado = [];
+
+        foreach ($docentes as $docente) {
+            $codpes = $docente['codpes'];
+            $metricas = $this->getMetricasDetalhadas($codpes);
+
+            $resultado[] = [
+                'docente' => $docente,
+                'artigos' => $metricas['artigos'],
+                'livros' => $metricas['livros'],
+                'capitulosLivros' => $metricas['capitulosLivros'],
+                'projetos' => $metricas['projetos'],
+                'orientacoesIC' => $metricas['orientacoesIC'],
+                'orientacoesConcluidasDoc' => $metricas['orientacoesConcluidasDoc'],
+                'orientacoesMestrado' => $metricas['orientacoesMestrado'],
+                'premios' => $metricas['premios'] ?? [],
+                'contagem' => $metricas['contagem'],
+                'ultimaAtualizacao' => $metricas['ultimaAtualizacao'],
+                'resumoCV' => $metricas['resumoCV'] ?? '',
+            ];
+        }
+
+        return $resultado;
+    }
+
 
 }

@@ -2,21 +2,19 @@
 
 @section('content')
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="flex-grow-1 me-3">
-                <h4 class="fw-bold text-primary mb-2">
-                    <i class="fas fa-chalkboard-teacher me-2"></i>
-                    Lattes: Resumo Docentes Lattes Completo
-                </h4>
-                <p class="lead text-muted mb-0">
-                    Este <span class="fw-semibold text-dark">dashboard</span> apresenta um panorama completo dos
-                    docentes,
-                    incluindo <span class="text-primary">produções acadêmicas</span>,
-                    <span class="text-success">orientações</span> e
-                    <span class="text-info">projetos de pesquisa</span>.
-                    Use o filtro ao lado para buscar informações específicas por <span class="fw-semibold">nome do
-                        docente</span>.
-                </p>
+        <div class="card shadow-sm mb-4 bg-light border-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-chalkboard-teacher fa-3x text-primary"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h4 class="fw-bold text-primary mb-1">Dashboard de Métricas Lattes</h4>
+                        <p class="text-muted mb-0">
+                            Explore um panorama completo da produção acadêmica dos docentes. Utilize os filtros abaixo para refinar sua busca por <strong>nome</strong> ou <strong>departamento</strong>. Cada linha da tabela oferece um resumo das principais métricas, como <span class="text-primary">artigos</span>, <span class="text-success">livros</span>, <span class="text-info">orientações</span> e <span class="text-warning">prêmios</span>.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -38,7 +36,8 @@
                                 <option value="">-- Todos os Departamentos --</option>
                                 @foreach($departamentos as $sigla => $dados)
                                     <option value="{{ $dados[1] }}" {{ ($departamento_filtro == $dados[1]) ? 'selected' : '' }}>
-                                        {{ $dados[1] }}</option>
+                                        {{ $dados[1] }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -61,6 +60,11 @@
                                 <th class="text-center"><i class="fas fa-book text-success"></i> Livros</th>
                                 <th class="text-center"><i class="fas fa-book-open text-info"></i> Capítulos</th>
                                 <th class="text-center"><i class="fas fa-project-diagram text-info"></i> Projetos</th>
+                                <th class="text-center"><i class="fas fa-user-graduate text-primary"></i> IC</th>
+                                <th class="text-center"><i class="fas fa-user-graduate text-success"></i> Mestrado</th>
+                                <th class="text-center"><i class="fas fa-user-graduate text-info"></i> Doutorado</th>
+                                <th class="text-center"><i class="fas fa-trophy text-warning"></i> Prêmios</th>
+                                <th class="text-center"><i class="fas fa-calendar-check text-warning"></i> Eventos</th>
                                 <th class="text-center"><i class="fas fa-calendar-alt text-muted"></i> Atualização</th>
                                 <th class="text-center"><i class="fas fa-file-export text-success"></i> Ações</th>
                                 <th class="text-center"><i class="fas fa-file-export text-success"></i> Exportar</th>
@@ -92,6 +96,21 @@
                                     <td class="text-center">
                                         {{ $docente['contagem']['projetos'] ?? 0 }}
                                     </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['orientacoes-concluidas-ic'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['orientacoes-concluidas-mestrado'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['orientacoes-concluidas-doutorado'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['premios'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['eventos'] ?? 0 }}
+                                    </td>
                                     <td class="text-muted text-center small">
                                         {{ !empty($docente['ultimaAtualizacao']) ? \Carbon\Carbon::createFromFormat('dmY', $docente['ultimaAtualizacao'])->format('d/m/Y') : '-' }}
                                     </td>
@@ -110,7 +129,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="14">
                                         <div class="alert alert-warning mb-0">Nenhum docente encontrado ou dados indisponíveis.
                                         </div>
                                     </td>
@@ -160,6 +179,8 @@
                                                 </li>
                                                 <li><strong>Doutorado:</strong>
                                                     {{ count($docente['orientacoesConcluidasDoc'] ?? []) }}</li>
+                                                <li><strong>Eventos:</strong>
+                                                    {{ count($docente['eventos'] ?? []) }}</li>
                                                 <li><strong>Mestrado:</strong>
                                                     {{ count($docente['orientacoesMestrado'] ?? []) }}</li>
                                             </ul>

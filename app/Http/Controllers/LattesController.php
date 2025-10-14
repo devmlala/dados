@@ -29,66 +29,26 @@ class LattesController extends Controller
 
     public function dashboard(Request $request)
     {
-        $limit = 5;
-        $busca = $request->input('busca'); // Captures the search text
-        $departamento_filtro = $request->input('departamento'); // Captura o departamento do filtro
-        $page = $request->input('page', 1);
+        $limit = 5; // Or your desired limit
+        $busca = $request->input('busca');
+        $departamento_filtro = $request->input('departamento');
+        $page = $request->input('page', 1, FILTER_VALIDATE_INT);
 
-        // List all docentes
-        $todosDocentes = Pessoa::listarDocentes(null, 'A'); // Apenas ativos
+        // 1. Get the full list of active professors, pre-filtered by department if applicable.
+        // This is much more efficient than filtering in PHP.
+        $codDepto = $this->getCodDeptoPorNome($departamento_filtro);
+        $todosDocentes = Pessoa::listarDocentes($codDepto, 'A');
 
-        // Filter by name, if a search query exists
-        if (!empty($busca)) {
-            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($busca) {
-                return stripos(utf8_encode($docente['nompes'] ?? ''), $busca) !== false;
-            });
-            $todosDocentes = array_values($todosDocentes); // Reindex the array
-        }
+        // 2. Filter the list by name using the search term.
+        $docentesFiltrados = $this->filtrarDocentesPorNome($todosDocentes, $busca);
 
-        // Filtra por departamento, se um foi selecionado
-        if (!empty($departamento_filtro)) {
-            $todosDocentes = array_filter($todosDocentes, function ($docente) use ($departamento_filtro) {
-                // Otimização: busca e cacheia os departamentos somente durante o filtro.
-                $departamentos = Cache::remember("docente_vinculos_nomes_{$docente['codpes']}", now()->addHours(24), function () use ($docente) {
-                    $vinculos = Pessoa::listarVinculosAtivos($docente['codpes'], false);
-                    if (!is_array($vinculos)) return [];
-                    $nomes = array_values(array_unique(array_filter(array_column($vinculos, 'nomset'))));
-                    return array_map('utf8_encode', $nomes);
-                });
-                return in_array($departamento_filtro, $departamentos);
-            });
-            $todosDocentes = array_values($todosDocentes); // Reindexa o array
-        }
+        // 3. Paginate the filtered list and fetch detailed metrics ONLY for the current page.
+        $docentesComMetricas = $this->obterMetricasParaPagina($docentesFiltrados, $limit, $page);
 
-        // Paginate the results
-        $offset = ($page - 1) * $limit;
-        $docentesPagina = array_slice($todosDocentes, $offset, $limit);
-
-        // Fetch metrics and department for each docente
-        $docentesComMetricas = [];
-        foreach ($docentesPagina as $docente) {
-            $metricas = $this->metricsService->getMetricasDetalhadas($docente['codpes']);
-            $docente['nompes'] = utf8_encode($docente['nompes'] ?? '');
-            
-            // Otimização: Busca e cacheia os departamentos apenas para os docentes da página atual.
-            $departamentos = Cache::remember("docente_vinculos_nomes_{$docente['codpes']}", now()->addHours(24), function () use ($docente) {
-                $vinculos = Pessoa::listarVinculosAtivos($docente['codpes'], false);
-                if (!is_array($vinculos)) return [];
-                $nomes = array_values(array_unique(array_filter(array_column($vinculos, 'nomset'))));
-                return array_map('utf8_encode', $nomes);
-            });
-
-            $docentesComMetricas[] = array_merge($metricas, [
-                'docente' => $docente,
-                'departamentos' => $departamentos,
-            ]);
-        }
-
-        
-        // Create a manual paginator
+        // 4. Create a manual paginator instance.
         $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             $docentesComMetricas,
-            count($todosDocentes),
+            count($docentesFiltrados),
             $limit,
             $page,
             ['path' => url()->current(), 'query' => $request->query()]
@@ -100,6 +60,73 @@ class LattesController extends Controller
             'busca' => $busca,
             'departamento_filtro' => $departamento_filtro,
         ]);
+    }
+
+    /**
+     * Filters a list of professors by name.
+     */
+    private function filtrarDocentesPorNome(array $docentes, ?string $busca): array
+    {
+        if (empty($busca)) {
+            return $docentes;
+        }
+
+        return array_values(array_filter($docentes, function ($docente) use ($busca) {
+            return stripos(utf8_encode($docente['nompes'] ?? ''), $busca) !== false;
+        }));
+    }
+
+    /**
+     * Paginates an array of professors and fetches detailed metrics for the current page.
+     */
+    private function obterMetricasParaPagina(array $docentes, int $limit, int $page): array
+    {
+        $offset = ($page - 1) * $limit;
+        $docentesPagina = array_slice($docentes, $offset, $limit);
+
+        $docentesComMetricas = [];
+        foreach ($docentesPagina as $docente) {
+            $metricas = $this->metricsService->getMetricasDetalhadas($docente['codpes']);
+            $docente['nompes'] = utf8_encode($docente['nompes'] ?? '');
+
+            // Optimization: Fetch and cache departments only for the professors on the current page.
+            $departamentos = $this->getDepartamentosDocente($docente['codpes']);
+
+            $docentesComMetricas[] = array_merge($metricas, [
+                'docente' => $docente,
+                'departamentos' => $departamentos,
+            ]);
+        }
+
+        return $docentesComMetricas;
+    }
+
+    /**
+     * Fetches and caches the department names for a given professor.
+     */
+    private function getDepartamentosDocente(int $codpes): array
+    {
+        return Cache::remember("docente_vinculos_nomes_{$codpes}", now()->addHours(24), function () use ($codpes) {
+            $vinculos = Pessoa::listarVinculosAtivos($codpes, false);
+            if (!is_array($vinculos)) {
+                return [];
+            }
+            $nomes = array_values(array_unique(array_filter(array_column($vinculos, 'nomset'))));
+            return array_map('utf8_encode', $nomes);
+        });
+    }
+
+    /**
+     * Gets the department code from its name for optimized database filtering.
+     */
+    private function getCodDeptoPorNome(?string $nomeDepto): ?int
+    {
+        if (empty($nomeDepto)) {
+            return null;
+        }
+        $departamentos = \App\Utils\Util::getDepartamentos();
+        $depto = collect($departamentos)->firstWhere('1', $nomeDepto);
+        return $depto[0] ?? null;
     }
 
 

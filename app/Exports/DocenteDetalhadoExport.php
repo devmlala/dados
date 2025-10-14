@@ -3,10 +3,7 @@
 namespace App\Exports;
 
 use App\Services\LattesMetricsService;
-use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithTitle;
 
 class DocenteDetalhadoExport implements WithMultipleSheets
 {
@@ -22,68 +19,38 @@ class DocenteDetalhadoExport implements WithMultipleSheets
         $service = new LattesMetricsService();
         $dados = $service->getMetricasDetalhadas($this->codpes);
 
+        // Mapeia as chaves de dados para nomes de planilhas legíveis
         $map = [
             'artigos' => 'Artigos',
             'livros' => 'Livros',
             'capitulosLivros' => 'Capítulos',
+            'eventos' => 'Participação em Eventos',
+            'organizacaoEventos' => 'Organização de Eventos',
             'projetos' => 'Projetos',
+            'premios' => 'Prêmios e Títulos',
+            'orientacoesConcluidasDoc' => 'Orientações de Doutorado',
+            'orientacoesMestrado' => 'Orientações de Mestrado',
             'orientacoesIC' => 'Orientações IC',
-            'orientacoesConcluidasDoc' => 'Doutorado',
-            'orientacoesMestrado' => 'Mestrado',
-            'premios' => 'Prêmios',
+            'orientacoesPosDoc' => 'Orientações de Pós-Doc',
+            'bancasDoutorado' => 'Bancas de Doutorado',
+            'bancasMestrado' => 'Bancas de Mestrado',
+            'trabAnais' => 'Trabalhos em Anais',
+            'trabTecnicos' => 'Trabalhos Técnicos',
+            'apresTrab' => 'Apresentações de Trabalho',
+            'textosJornaisRevistas' => 'Textos em Jornais/Revistas',
+            'relatoriosPesquisa' => 'Relatórios de Pesquisa',
+            'materialDidatico' => 'Material Didático',
+            'formacaoAcademica' => 'Formação Acadêmica',
         ];
 
-        $linhas = [];
+        $sheets = [];
 
         foreach ($map as $key => $nome) {
-            foreach ($dados[$key] ?? [] as $item) {
-                if (!is_array($item)) {
-                    continue;
-                }
-
-                $linha = ['Tipo' => $nome];
-
-                foreach ($item as $chave => $valor) {
-                    if (is_array($valor)) {
-                        $linha[$chave] = implode('; ', array_map(function ($v) {
-                            return is_array($v) ? implode(' ', $v) : $v;
-                        }, $valor));
-                    } else {
-                        $linha[$chave] = $valor;
-                    }
-                }
-
-                $linhas[] = $linha;
+            if (!empty($dados[$key]) && is_array($dados[$key])) {
+                $sheets[] = new ArraySheetWithHeaderExport($dados[$key], $nome);
             }
         }
 
-        // ✅ Remove linhas duplicadas
-        $linhas = array_values(array_unique($linhas, SORT_REGULAR));
-
-        return [
-            new class($linhas) implements FromArray, WithHeadings, WithTitle {
-                private $linhas;
-
-                public function __construct(array $linhas)
-                {
-                    $this->linhas = $linhas;
-                }
-
-                public function array(): array
-                {
-                    return $this->linhas;
-                }
-
-                public function headings(): array
-                {
-                    return array_keys($this->linhas[0] ?? []);
-                }
-
-                public function title(): string
-                {
-                    return 'Produção Docente';
-                }
-            }
-        ];
+        return $sheets;
     }
 }
