@@ -60,18 +60,20 @@
                                 <th class="text-center"><i class="fas fa-book text-success"></i> Livros</th>
                                 <th class="text-center"><i class="fas fa-book-open text-info"></i> Capítulos</th>
                                 <th class="text-center"><i class="fas fa-project-diagram text-info"></i> Projetos</th>
+                                <th class="text-center"><i class="fas fa-calendar-check text-warning"></i> Eventos</th>
                                 <th class="text-center"><i class="fas fa-user-graduate text-primary"></i> IC</th>
                                 <th class="text-center"><i class="fas fa-user-graduate text-success"></i> Mestrado</th>
                                 <th class="text-center"><i class="fas fa-user-graduate text-info"></i> Doutorado</th>
+                                <th class="text-center"><i class="fas fa-chalkboard-teacher text-secondary"></i> Pós-Doc</th>
                                 <th class="text-center"><i class="fas fa-trophy text-warning"></i> Prêmios</th>
-                                <th class="text-center"><i class="fas fa-calendar-check text-warning"></i> Eventos</th>
+                                <th class="text-center"><i class="fas fa-plus-circle text-muted"></i> Mais</th>
                                 <th class="text-center"><i class="fas fa-calendar-alt text-muted"></i> Atualização</th>
                                 <th class="text-center"><i class="fas fa-file-export text-success"></i> Ações</th>
                                 <th class="text-center"><i class="fas fa-file-export text-success"></i> Exportar</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($docentes as $docente)
+                            @forelse ($docentes as $index => $docente)
                                 <tr class="border-bottom">
                                     <td class="pl-4">
                                         <strong>{{ $docente['docente']['nompes'] }}</strong>
@@ -97,6 +99,9 @@
                                         {{ $docente['contagem']['projetos'] ?? 0 }}
                                     </td>
                                     <td class="text-center">
+                                        {{ $docente['contagem']['eventos'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
                                         {{ $docente['contagem']['orientacoes-concluidas-ic'] ?? 0 }}
                                     </td>
                                     <td class="text-center">
@@ -109,7 +114,28 @@
                                         {{ $docente['contagem']['premios'] ?? 0 }}
                                     </td>
                                     <td class="text-center">
-                                        {{ $docente['contagem']['eventos'] ?? 0 }}
+                                        {{ $docente['contagem']['orientacoes-concluidas-pos-doc'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownMais{{$index}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Ver
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMais{{$index}}">
+                                                <h6 class="dropdown-header">Outras Produções</h6>
+                                                <a class="dropdown-item" href="#">Org. Eventos: <span class="badge badge-primary float-right">{{ $docente['contagem']['organizacao-eventos'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Bancas Doutorado: <span class="badge badge-info float-right">{{ $docente['contagem']['bancas-doutorado'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Bancas Mestrado: <span class="badge badge-success float-right">{{ $docente['contagem']['bancas-mestrado'] ?? 0 }}</span></a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="#">Trab. em Anais: <span class="badge badge-secondary float-right">{{ $docente['contagem']['trabalhos-anais'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Trab. Técnicos: <span class="badge badge-secondary float-right">{{ $docente['contagem']['trabalhos-tecnicos'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Apres. Trabalho: <span class="badge badge-secondary float-right">{{ $docente['contagem']['apresentacao-de-trabalho'] ?? 0 }}</span></a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="#">Textos Jornais: <span class="badge badge-light float-right">{{ $docente['contagem']['textos-jornais-revistas'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Rel. Pesquisa: <span class="badge badge-light float-right">{{ $docente['contagem']['relatorios-pesquisa'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Material Didático: <span class="badge badge-light float-right">{{ $docente['contagem']['material-didatico'] ?? 0 }}</span></a>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td class="text-muted text-center small">
                                         {{ !empty($docente['ultimaAtualizacao']) ? \Carbon\Carbon::createFromFormat('dmY', $docente['ultimaAtualizacao'])->format('d/m/Y') : '-' }}
@@ -129,7 +155,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="14">
+                                    <td colspan="15">
                                         <div class="alert alert-warning mb-0">Nenhum docente encontrado ou dados indisponíveis.
                                         </div>
                                     </td>

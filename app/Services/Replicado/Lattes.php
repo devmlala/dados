@@ -28,7 +28,7 @@ class Lattes extends LattesBase
     public static function listarParticipacaoEventos($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = 5, $limit_fim = null)
     {
         // A chamada a `self::obterArray` funcionará porque nossa classe herda de LattesBase
-        if (!$lattes = self::obterArray($codpes, $lattes_array)) {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
             return false;
         }
 
@@ -43,22 +43,30 @@ class Lattes extends LattesBase
             'PARTICIPACAO-EM-SIMPOSIO' => 'Simpósio',
             'PARTICIPACAO-EM-OFICINA' => 'Oficina',
             'PARTICIPACAO-EM-ENCONTRO' => 'Encontro',
-            'OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS' => 'Outro',
+            'OUTRAS-PARTICIPACOES-EM-EVENTOS-E-CONGRESSOS' => 'Outro',
         ];
 
         $todos_eventos = [];
         foreach ($tipos_evento as $chave_lattes => $nome_tipo) {
             $participacoes = Arr::get($eventos, $chave_lattes, []);
-
-            // Se for um único evento, o XML é convertido para um array associativo direto.
-            // Colocamos dentro de um array para normalizar a estrutura.
-            if (!empty($participacoes) && isset($participacoes['@attributes'])) {
-                $participacoes = [$participacoes];
+            
+            // Se não houver participações, pula para o próximo tipo.
+            if (empty($participacoes)) {
+                continue;
             }
+            $participacoes = Arr::isAssoc($participacoes) ? [$participacoes] : $participacoes;
 
             foreach ($participacoes as $participacao) {
-                $dados_basicos = Arr::get($participacao, 'DADOS-BASICOS-DA-PARTICIPACAO-EM-EVENTO.@attributes', []);
-                $detalhamento = Arr::get($participacao, 'DETALHAMENTO-DA-PARTICIPACAO-EM-EVENTO.@attributes', []);
+                // A chave para "Outros" é diferente das demais
+                if ($chave_lattes == 'OUTRAS-PARTICIPACOES-EM-EVENTOS-E-CONGRESSOS') {
+                    $dados_basicos_path = 'DADOS-BASICOS-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS';
+                    $detalhamento_path = 'DETALHAMENTO-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS';
+                } else {
+                    $dados_basicos_path = 'DADOS-BASICOS-DA-PARTICIPACAO-EM-EVENTO';
+                    $detalhamento_path = 'DETALHAMENTO-DA-PARTICIPACAO-EM-EVENTO';
+                }
+                $dados_basicos = Arr::get($participacao, "{$dados_basicos_path}.@attributes", []);
+                $detalhamento = Arr::get($participacao, "{$detalhamento_path}.@attributes", []);
 
                 $todos_eventos[] = [
                     'TIPO_EVENTO' => $nome_tipo,

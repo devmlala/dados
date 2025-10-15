@@ -142,19 +142,19 @@ class LattesMetricsService
             'trabalhos-anais' => count($trabAnais),
             'trabalhos-tecnicos' => count($trabTecnicos),
             'apresentacao-de-trabalho' => count($apresTrab),
-            'capitulos-livros' => count($capitulosLivros),
-            'bancas-mestrado' => count($bancasMestrado),
-            'bancas-doutorado' => count($bancasDoutorado),
+            'capitulos-livros' => count($capitulosLivros), // Corrected key
+            'bancas-mestrado' => count($bancasMestrado), // Corrected key
+            'bancas-doutorado' => count($bancasDoutorado), // Corrected key
             'relatorios-pesquisa' => count($relatoriosPesquisa),
-            'formacao-academica' => count($formacaoAcademica),
+            'formacao-academica' => collect($formacaoAcademica)->sum(fn($tipo) => count($tipo)), // Sum all formations
             'formacao-profissional' => count($formacaoProfissional),
-            'organizacao-eventos' => count($organizacaoEventos),
-            'material-didatico' => count($materialDidatico),
+            'organizacao-eventos' => count($organizacaoEventos), // Corrected key
+            'material-didatico' => count($materialDidatico), // Corrected key
             //'resumo-cv' => count($resumoCV),
             //'orcid' => count($orcid),
             'orientacoes-concluidas-doutorado' => count($orientacoesConcluidasDoc),
             'orientacoes-concluidas-mestrado' => count($orientacoesMestrado),
-            'orientacoes-concluidas-pos-doutorado' => count($orientacoesPosDoc),
+            'orientacoes-concluidas-pos-doc' => count($orientacoesPosDoc), // Corrected key
             'orientacoes-concluidas-ic' => count($orientacoesIC),
             'eventos' => count($eventos),
             'premios' => count($premios),
