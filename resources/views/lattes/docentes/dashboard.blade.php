@@ -11,7 +11,11 @@
                     <div class="flex-grow-1 ms-3">
                         <h4 class="fw-bold text-primary mb-1">Dashboard de Métricas Lattes</h4>
                         <p class="text-muted mb-0">
-                            Explore um panorama completo da produção acadêmica dos docentes. Utilize os filtros abaixo para refinar sua busca por <strong>nome</strong> ou <strong>departamento</strong>. Cada linha da tabela oferece um resumo das principais métricas, como <span class="text-primary">artigos</span>, <span class="text-success">livros</span>, <span class="text-info">orientações</span> e <span class="text-warning">prêmios</span>.
+                            Explore um panorama completo da produção acadêmica dos docentes. Utilize os filtros abaixo para
+                            refinar sua busca por <strong>nome</strong> ou <strong>departamento</strong>. Cada linha da
+                            tabela oferece um resumo das principais métricas, como <span
+                                class="text-primary">artigos</span>, <span class="text-success">livros</span>, <span
+                                class="text-info">orientações</span> e <span class="text-warning">prêmios</span>.
                         </p>
                     </div>
                 </div>
@@ -64,7 +68,8 @@
                                 <th class="text-center"><i class="fas fa-user-graduate text-primary"></i> IC</th>
                                 <th class="text-center"><i class="fas fa-user-graduate text-success"></i> Mestrado</th>
                                 <th class="text-center"><i class="fas fa-user-graduate text-info"></i> Doutorado</th>
-                                <th class="text-center"><i class="fas fa-chalkboard-teacher text-secondary"></i> Pós-Doc</th>
+                                <th class="text-center"><i class="fas fa-chalkboard-teacher text-secondary"></i> Pós-Doc
+                                </th>
                                 <th class="text-center"><i class="fas fa-trophy text-warning"></i> Prêmios</th>
                                 <th class="text-center"><i class="fas fa-plus-circle text-muted"></i> Mais</th>
                                 <th class="text-center"><i class="fas fa-calendar-alt text-muted"></i> Atualização</th>
@@ -118,22 +123,34 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="dropdown">
-                                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownMais{{$index}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <button class="btn btn-sm btn-light dropdown-toggle" type="button"
+                                                id="dropdownMais{{$index}}" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">
                                                 Ver
                                             </button>
-                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMais{{$index}}">
+                                            <div class="dropdown-menu dropdown-menu-right"
+                                                aria-labelledby="dropdownMais{{$index}}">
                                                 <h6 class="dropdown-header">Outras Produções</h6>
-                                                <a class="dropdown-item" href="#">Org. Eventos: <span class="badge badge-primary float-right">{{ $docente['contagem']['organizacao-eventos'] ?? 0 }}</span></a>
-                                                <a class="dropdown-item" href="#">Bancas Doutorado: <span class="badge badge-info float-right">{{ $docente['contagem']['bancas-doutorado'] ?? 0 }}</span></a>
-                                                <a class="dropdown-item" href="#">Bancas Mestrado: <span class="badge badge-success float-right">{{ $docente['contagem']['bancas-mestrado'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Org. Eventos: <span
+                                                        class="badge badge-primary float-right">{{ $docente['contagem']['organizacao-eventos'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Bancas Doutorado: <span
+                                                        class="badge badge-info float-right">{{ $docente['contagem']['bancas-doutorado'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Bancas Mestrado: <span
+                                                        class="badge badge-success float-right">{{ $docente['contagem']['bancas-mestrado'] ?? 0 }}</span></a>
                                                 <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Trab. em Anais: <span class="badge badge-secondary float-right">{{ $docente['contagem']['trabalhos-anais'] ?? 0 }}</span></a>
-                                                <a class="dropdown-item" href="#">Trab. Técnicos: <span class="badge badge-secondary float-right">{{ $docente['contagem']['trabalhos-tecnicos'] ?? 0 }}</span></a>
-                                                <a class="dropdown-item" href="#">Apres. Trabalho: <span class="badge badge-secondary float-right">{{ $docente['contagem']['apresentacao-de-trabalho'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Trab. em Anais: <span
+                                                        class="badge badge-secondary float-right">{{ $docente['contagem']['trabalhos-anais'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Trab. Técnicos: <span
+                                                        class="badge badge-secondary float-right">{{ $docente['contagem']['trabalhos-tecnicos'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Apres. Trabalho: <span
+                                                        class="badge badge-secondary float-right">{{ $docente['contagem']['apresentacao-de-trabalho'] ?? 0 }}</span></a>
                                                 <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Textos Jornais: <span class="badge badge-light float-right">{{ $docente['contagem']['textos-jornais-revistas'] ?? 0 }}</span></a>
-                                                <a class="dropdown-item" href="#">Rel. Pesquisa: <span class="badge badge-light float-right">{{ $docente['contagem']['relatorios-pesquisa'] ?? 0 }}</span></a>
-                                                <a class="dropdown-item" href="#">Material Didático: <span class="badge badge-light float-right">{{ $docente['contagem']['material-didatico'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Textos Jornais: <span
+                                                        class="badge badge-light float-right">{{ $docente['contagem']['textos-jornais-revistas'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Rel. Pesquisa: <span
+                                                        class="badge badge-light float-right">{{ $docente['contagem']['relatorios-pesquisa'] ?? 0 }}</span></a>
+                                                <a class="dropdown-item" href="#">Material Didático: <span
+                                                        class="badge badge-light float-right">{{ $docente['contagem']['material-didatico'] ?? 0 }}</span></a>
                                             </div>
                                         </div>
                                     </td>
@@ -181,15 +198,6 @@
                             <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                         </div>
                         <div class="modal-body">
-                            <div class="mb-3">
-                                <h6><i class="fas fa-graduation-cap"></i> Formação Acadêmica</h6>
-                                <ul class="list-group small">
-                                    @foreach(($docente['formacaoAcademica'] ?? []) as $formacao)
-                                        <li class="list-group-item">{{ $formacao['titulo'] ?? 'N/A' }} -
-                                            {{ $formacao['instituicao'] ?? 'N/A' }} ({{ $formacao['anoConclusao'] ?? 'N/A' }})</li>
-                                    @endforeach
-                                </ul>
-                            </div>
 
                             <div class="row">
                                 <div class="col-md-6">
