@@ -81,12 +81,11 @@ class LattesMetricsService
             $capitulosLivros = Lattes::listarCapitulosLivros($codpes, $lattesArray, 'registros', -1);
             $capitulosLivros = is_array($capitulosLivros) ? $capitulosLivros : [];
 
-            $bancasMestrado = Lattes::retornarBancaMestrado($codpes, $lattesArray);
+            $bancasMestrado = LattesService::listarBancasMestrado($codpes, $lattesArray); // Correctly using LattesService
             $bancasMestrado = is_array($bancasMestrado) ? $bancasMestrado : [];
 
-            $bancasDoutorado = Lattes::retornarBancaDoutorado($codpes, $lattesArray);
+            $bancasDoutorado = LattesService::listarBancasDoutorado($codpes, $lattesArray); // Correctly using LattesService
             $bancasDoutorado = is_array($bancasDoutorado) ? $bancasDoutorado : [];
-
             $relatoriosPesquisa = Lattes::listarRelatorioPesquisa($codpes, $lattesArray, 'registros', -1);
             $relatoriosPesquisa = is_array($relatoriosPesquisa) ? $relatoriosPesquisa : [];
 

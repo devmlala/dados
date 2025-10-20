@@ -78,6 +78,9 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                              // dd($docentes->first()['bancasDoutorado']);
+                            @endphp
                             @forelse ($docentes as $index => $docente)
                                 <tr class="border-bottom">
                                     <td class="pl-4">

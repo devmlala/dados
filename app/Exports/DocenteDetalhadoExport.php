@@ -63,6 +63,12 @@ class DocenteDetalhadoExport implements WithMultipleSheets
      */
     private function processarDadosParaExportacao(array $data): array
     {
+        // If the data is a simple list of strings (like for 'bancas'),
+        // return it as is. The parent exporter will handle it.
+        if (!empty($data) && is_string(reset($data))) {
+            return $data;
+        }
+
         $processed = [];
         foreach ($data as $row) {
             if (!is_array($row)) continue;

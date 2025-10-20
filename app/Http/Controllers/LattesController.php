@@ -269,7 +269,10 @@ class LattesController extends Controller
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
-        return view($view, ['docentes' => $paginator, $dataKey => $dados, 'busca' => $busca, 'limit' => $limit]);
+        return view($view, ['docentes' => $paginator, 
+                        $dataKey => $dados,
+                        'busca' => $busca, 
+                        'limit' => $limit]);
     }
 
 }

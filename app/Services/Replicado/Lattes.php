@@ -27,72 +27,114 @@ class Lattes extends LattesBase
      */
     public static function listarParticipacaoEventos($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = 5, $limit_fim = null)
     {
-        // A chamada a `self::obterArray` funcionará porque nossa classe herda de LattesBase
         if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
             return false;
         }
 
-        $eventos = Arr::get($lattes, 'DADOS-COMPLEMENTARES.PARTICIPACAO-EM-EVENTOS-CONGRESSOS', false);
-        if (!$eventos) {
+        $eventTypes = [
+            'PARTICIPACAO-EM-CONGRESSO' => ['name' => 'Congresso', 'prefix' => 'DADOS-BASICOS-DA-PARTICIPACAO-EM-CONGRESSO', 'detail_prefix' => 'DETALHAMENTO-DA-PARTICIPACAO-EM-CONGRESSO'],
+            'PARTICIPACAO-EM-SEMINARIO' => ['name' => 'Seminário', 'prefix' => 'DADOS-BASICOS-DA-PARTICIPACAO-EM-SEMINARIO', 'detail_prefix' => 'DETALHAMENTO-DA-PARTICIPACAO-EM-SEMINARIO'],
+            'PARTICIPACAO-EM-SIMPOSIO' => ['name' => 'Simpósio', 'prefix' => 'DADOS-BASICOS-DA-PARTICIPACAO-EM-SIMPOSIO', 'detail_prefix' => 'DETALHAMENTO-DA-PARTICIPACAO-EM-SIMPOSIO'],
+            'PARTICIPACAO-EM-OFICINA' => ['name' => 'Oficina', 'prefix' => 'DADOS-BASICOS-DA-PARTICIPACAO-EM-OFICINA', 'detail_prefix' => 'DETALHAMENTO-DA-PARTICIPACAO-EM-OFICINA'],
+            'PARTICIPACAO-EM-ENCONTRO' => ['name' => 'Encontro', 'prefix' => 'DADOS-BASICOS-DA-PARTICIPACAO-EM-ENCONTRO', 'detail_prefix' => 'DETALHAMENTO-DA-PARTICIPACAO-EM-ENCONTRO'],
+            'OUTRAS-PARTICIPACOES-EM-EVENTOS-E-CONGRESSOS' => ['name' => 'Outro', 'prefix' => 'DADOS-BASICOS-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS', 'detail_prefix' => 'DETALHAMENTO-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS'],
+        ];
+
+        $allEvents = collect($eventTypes)->flatMap(function ($typeInfo, $lattesKey) use ($lattes) {
+            $records = self::listarRegistrosPorChaveOrdenado(
+                $lattes,
+                "DADOS-COMPLEMENTARES.PARTICIPACAO-EM-EVENTOS-CONGRESSOS.{$lattesKey}",
+                "{$typeInfo['prefix']}.@attributes.ANO"
+            );
+
+            return collect($records)->map(function ($participation) use ($typeInfo) {
+                $basicData = Arr::get($participation, "{$typeInfo['prefix']}.@attributes", []);
+                $details = Arr::get($participation, "{$typeInfo['detail_prefix']}.@attributes", []);
+
+                return [
+                    'TIPO_EVENTO'        => $typeInfo['name'],
+                    'NOME_EVENTO'        => Arr::get($basicData, 'NOME-DO-EVENTO', ''), // Correct: Name is in basic data
+                    'ANO'                => (string) Arr::get($basicData, 'ANO', ''),
+                    'FORMA_PARTICIPACAO' => Arr::get($basicData, 'FORMA-PARTICIPACAO', ''),
+                    'LOCAL_EVENTO'       => Arr::get($details, 'LOCAL-DO-EVENTO', ''), // New: Location is in details
+                ];
+            });
+        });
+
+        return $allEvents
+            ->sortByDesc('ANO')
+            ->values() // Reset keys to be 0-indexed
+            ->filter(function ($event, $index) use ($tipo, $limit_ini, $limit_fim) {
+                // The parent's protected method `verificarFiltro` is accessible here.
+                return self::verificarFiltro($tipo, $event['ANO'], $limit_ini, $limit_fim, $index + 1);
+            })
+            ->values() // Reset keys again after filtering
+            ->all();
+    }
+
+    /**
+     * Retrieves a detailed list of Master's examination boards a person participated in.
+     *
+     * @param int $codpes
+     * @param array|null $lattes_array
+     * @return array|bool
+     */
+    public static function listarBancasMestrado($codpes, $lattes_array = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
             return false;
         }
 
-        $tipos_evento = [
-            'PARTICIPACAO-EM-CONGRESSO' => 'Congresso',
-            'PARTICIPACAO-EM-SEMINARIO' => 'Seminário',
-            'PARTICIPACAO-EM-SIMPOSIO' => 'Simpósio',
-            'PARTICIPACAO-EM-OFICINA' => 'Oficina',
-            'PARTICIPACAO-EM-ENCONTRO' => 'Encontro',
-            'OUTRAS-PARTICIPACOES-EM-EVENTOS-E-CONGRESSOS' => 'Outro',
-        ];
+        $records = self::listarRegistrosPorChaveOrdenado(
+            $lattes,
+            'DADOS-COMPLEMENTARES.PARTICIPACAO-EM-BANCA-TRABALHOS-CONCLUSAO.PARTICIPACAO-EM-BANCA-DE-MESTRADO',
+            'DADOS-BASICOS-DA-PARTICIPACAO-EM-BANCA-DE-MESTRADO.@attributes.ANO'
+        );
 
-        $todos_eventos = [];
-        foreach ($tipos_evento as $chave_lattes => $nome_tipo) {
-            $participacoes = Arr::get($eventos, $chave_lattes, []);
-            
-            // Se não houver participações, pula para o próximo tipo.
-            if (empty($participacoes)) {
-                continue;
-            }
-            $participacoes = Arr::isAssoc($participacoes) ? [$participacoes] : $participacoes;
+        return collect($records)->map(function ($banca) {
+            $basicData = Arr::get($banca, 'DADOS-BASICOS-DA-PARTICIPACAO-EM-BANCA-DE-MESTRADO.@attributes', []);
+            $details = Arr::get($banca, 'DETALHAMENTO-DA-PARTICIPACAO-EM-BANCA-DE-MESTRADO.@attributes', []);
 
-            foreach ($participacoes as $participacao) {
-                // A chave para "Outros" é diferente das demais
-                if ($chave_lattes == 'OUTRAS-PARTICIPACOES-EM-EVENTOS-E-CONGRESSOS') {
-                    $dados_basicos_path = 'DADOS-BASICOS-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS';
-                    $detalhamento_path = 'DETALHAMENTO-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS';
-                } else {
-                    $dados_basicos_path = 'DADOS-BASICOS-DA-PARTICIPACAO-EM-EVENTO';
-                    $detalhamento_path = 'DETALHAMENTO-DA-PARTICIPACAO-EM-EVENTO';
-                }
-                $dados_basicos = Arr::get($participacao, "{$dados_basicos_path}.@attributes", []);
-                $detalhamento = Arr::get($participacao, "{$detalhamento_path}.@attributes", []);
+            return [
+                'ANO'            => Arr::get($basicData, 'ANO', ''),
+                'TITULO'         => Arr::get($basicData, 'TITULO', ''),
+                'NOME_CANDIDATO' => Arr::get($details, 'NOME-DO-CANDIDATO', ''),
+                'TIPO'           => Arr::get($basicData, 'TIPO', ''),
+                'NOME_INSTITUICAO' => Arr::get($details, 'NOME-INSTITUICAO', ''),
+            ];
+        })->all();
+    }
 
-                $todos_eventos[] = [
-                    'TIPO_EVENTO' => $nome_tipo,
-                    'NOME_EVENTO' => Arr::get($detalhamento, 'NOME-DO-EVENTO', ''),
-                    'ANO' => Arr::get($dados_basicos, 'ANO-DE-REALIZACAO', ''),
-                    'FORMA_PARTICIPACAO' => Arr::get($detalhamento, 'FORMA-DE-PARTICIPACAO', ''),
-                    'LOCAL_EVENTO' => Arr::get($detalhamento, 'LOCAL-DO-EVENTO', ''),
-                ];
-            }
+    /**
+     * Retrieves a detailed list of Doctorate examination boards a person participated in.
+     *
+     * @param int $codpes
+     * @param array|null $lattes_array
+     * @return array|bool
+     */
+    public static function listarBancasDoutorado($codpes, $lattes_array = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
+            return false;
         }
 
-        // Ordena todos os eventos por ano, do mais recente para o mais antigo
-        usort($todos_eventos, function ($a, $b) {
-            return (int) $b['ANO'] - (int) $a['ANO'];
-        });
+        $records = self::listarRegistrosPorChaveOrdenado(
+            $lattes,
+            'DADOS-COMPLEMENTARES.PARTICIPACAO-EM-BANCA-TRABALHOS-CONCLUSAO.PARTICIPACAO-EM-BANCA-DE-DOUTORADO',
+            'DADOS-BASICOS-DA-PARTICIPACAO-EM-BANCA-DE-DOUTORADO.@attributes.ANO'
+        );
 
-        $eventos_filtrados = [];
-        $i = 0;
-        foreach ($todos_eventos as $evento) {
-            $i++;
-            // A chamada a `self::verificarFiltro` também funcionará, pois o método é `protected` na classe pai.
-            if (self::verificarFiltro($tipo, $evento['ANO'], $limit_ini, $limit_fim, $i)) {
-                $eventos_filtrados[] = $evento;
-            }
-        }
+        return collect($records)->map(function ($banca) {
+            $basicData = Arr::get($banca, 'DADOS-BASICOS-DA-PARTICIPACAO-EM-BANCA-DE-DOUTORADO.@attributes', []);
+            $details = Arr::get($banca, 'DETALHAMENTO-DA-PARTICIPACAO-EM-BANCA-DE-DOUTORADO.@attributes', []);
 
-        return $eventos_filtrados;
+            return [
+                'ANO'            => Arr::get($basicData, 'ANO', ''),
+                'TITULO'         => Arr::get($basicData, 'TITULO', ''),
+                'NOME_CANDIDATO' => Arr::get($details, 'NOME-DO-CANDIDATO', ''),
+                'TIPO'           => Arr::get($basicData, 'TIPO', ''),
+                'NOME_INSTITUICAO' => Arr::get($details, 'NOME-INSTITUICAO', ''),
+            ];
+        })->all();
     }
 }
