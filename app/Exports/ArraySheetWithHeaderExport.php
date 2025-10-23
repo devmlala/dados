@@ -14,8 +14,40 @@ class ArraySheetWithHeaderExport extends ArraySheetExport implements FromArray, 
             return [];
         }
 
+        // Mapa de tradução de chaves para nomes de colunas legíveis
+        $headerMap = [
+            // Genérico
+            'TITULO' => 'Título',
+            'ANO' => 'Ano',
+            'TIPO' => 'Tipo',
+            'NOME' => 'Nome',
+            'AUTORES' => 'Autores',
+
+            // Bancas
+            'CANDIDATO' => 'Candidato(a)',
+
+            // Eventos
+            'TIPO_EVENTO' => 'Tipo de Evento',
+            'NOME_EVENTO' => 'Nome do Evento',
+            'FORMA_PARTICIPACAO' => 'Forma de Participação',
+            'LOCAL_EVENTO' => 'Local',
+
+            // Formação
+            'NOME_INSTITUICAO' => 'Instituição',
+            'instituicao' => 'Instituição',
+            'titulo' => 'Título/Curso',
+            'anoConclusao' => 'Ano de Conclusão',
+            'nivel' => 'Nível',
+            'Descrição' => 'Título', // Para listas simples
+        ];
+
         // Pega as chaves do primeiro item para usar como cabeçalho
         $firstItem = reset($this->data);
-        return is_array($firstItem) ? array_keys($firstItem) : ['Descrição'];
+        $keys = is_array($firstItem) ? array_keys($firstItem) : ['Descrição'];
+
+        // Traduz as chaves para os nomes do mapa, se existirem, senão usa a própria chave
+        return array_map(function ($key) use ($headerMap) {
+            return $headerMap[$key] ?? ucwords(str_replace(['_', '-'], ' ', $key));
+        }, $keys);
     }
 }

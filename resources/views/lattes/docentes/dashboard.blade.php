@@ -72,6 +72,9 @@
                         </thead>
                         <tbody>
                             @forelse ($docentes as $docente)
+                            @php
+                              //  dd($docente['eventos']);
+                            @endphp
                                 <tr class="border-bottom">
                                     <td class="pl-4">
                                         <strong>{{ $docente['docente']['nompes'] }}</strong>

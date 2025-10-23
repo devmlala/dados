@@ -50,22 +50,28 @@ class Lattes extends LattesBase
         foreach ($tipos_evento as $chave_lattes => $nome_tipo) {
             $participacoes = Arr::get($eventos, $chave_lattes, []);
 
-            // Se for um único evento, o XML é convertido para um array associativo direto.
-            // Colocamos dentro de um array para normalizar a estrutura.
-            if (!empty($participacoes) && isset($participacoes['@attributes'])) {
+            // Normaliza a estrutura: se for um único evento (array associativo), coloca-o dentro de um array numérico.
+            if (!empty($participacoes) && !is_numeric(key($participacoes))) {
                 $participacoes = [$participacoes];
             }
 
             foreach ($participacoes as $participacao) {
-                $dados_basicos = Arr::get($participacao, 'DADOS-BASICOS-DA-PARTICIPACAO-EM-EVENTO.@attributes', []);
-                $detalhamento = Arr::get($participacao, 'DETALHAMENTO-DA-PARTICIPACAO-EM-EVENTO.@attributes', []);
+                // As chaves são dinâmicas, baseadas no tipo de evento (ex: ...-EM-CONGRESSO)
+                $dados_basicos_key = str_replace('PARTICIPACAO-EM-', 'DADOS-BASICOS-DA-PARTICIPACAO-EM-', $chave_lattes);
+                $detalhamento_key = str_replace('PARTICIPACAO-EM-', 'DETALHAMENTO-DA-PARTICIPACAO-EM-', $chave_lattes);
 
+                $dados_basicos = Arr::get($participacao, "{$dados_basicos_key}.@attributes", []);
+                $detalhamento = Arr::get($participacao, "{$detalhamento_key}.@attributes", []);
                 $todos_eventos[] = [
-                    'TIPO_EVENTO' => $nome_tipo,
-                    'NOME_EVENTO' => Arr::get($detalhamento, 'NOME-DO-EVENTO', ''),
-                    'ANO' => Arr::get($dados_basicos, 'ANO-DE-REALIZACAO', ''),
-                    'FORMA_PARTICIPACAO' => Arr::get($detalhamento, 'FORMA-DE-PARTICIPACAO', ''),
-                    'LOCAL_EVENTO' => Arr::get($detalhamento, 'LOCAL-DO-EVENTO', ''),
+                    'TIPO_EVENTO'        => $nome_tipo,
+                    'NOME_EVENTO'        => Arr::get($detalhamento, 'NOME-DO-EVENTO', ''),
+                    
+                    // O campo de ano pode variar, então verificamos as duas possibilidades.
+                    'ANO'                => Arr::get($dados_basicos, 'ANO', Arr::get($dados_basicos, 'ANO-DE-REALIZACAO', '')),
+                    
+                    // A forma de participação está nos dados básicos, não no detalhamento.
+                    'FORMA_PARTICIPACAO' => Arr::get($dados_basicos, 'FORMA-PARTICIPACAO', ''),
+                    'LOCAL_EVENTO'       => Arr::get($detalhamento, 'LOCAL-DO-EVENTO', ''),
                 ];
             }
         }
