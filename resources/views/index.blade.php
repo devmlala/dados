@@ -21,17 +21,21 @@
                 ]
             ],
             [
+                'title' => 'Produção Acadêmica - Lattes',
+                'items' => [
+                    ['name' => 'Artigos Publicados', 'url' => '/lattes/docentes/artigos'],
+                    ['name' => 'Livros Publicados', 'url' => '/lattes/livros-publicados'],
+                    ['name' => 'Projetos de Pesquisa', 'url' => '/lattes/projetos-pesquisa'],
+                    ['name' => 'Dashboard Geral', 'url' => '/lattes/dashboard'],
+                ]
+            ],
+            [
                 'title' => 'Dados de Disciplinas',
                 'items' => [
                     ['name' => 'Turmas', 'url' => '/turmas', 'api' => '/api/disciplinas/turmas'],
                 ]
             ],
         ];
-    @endphp
-        
-
-    @php
-        
     @endphp
 
     @foreach ($sections as $key => $section)

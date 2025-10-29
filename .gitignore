@@ -1,24 +1,36 @@
-/.phpunit.cache
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/pail
-/vendor
+# Dependencies
+/node_modules/
+/vendor/
+
+# Environment
 .env
-.env.backup
-.env.production
-.phpactor.json
+.env.*.local
+
+# Laravel
 .phpunit.result.cache
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
-/auth.json
-/.fleet
-/.idea
-/.nova
-/.vscode
-/.zed
-public/vendor
+storage/*.key
+storage/framework/(cache|sessions|views)/
+bootstrap/cache/
+
+# Logs
+*.log
+storage/logs/
+
+# IDE & Local config
+.cursor/
+.vscode/
+.mcp.json
+.junie/
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+
+# System
+.DS_Store
+
+# Documentation local
+AGENTS.md
+CLAUDE.md
+.github/copilot-instructions.md
