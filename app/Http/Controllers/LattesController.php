@@ -138,7 +138,8 @@ class LattesController extends Controller
     }
     public function exportarDetalhado($codpes)
     {
-        return Excel::download(new DocenteDetalhadoExport($codpes), "docente_{$codpes}_detalhado.xlsx");
+        $codpesParcial = substr((string)$codpes, 0, 3);
+        return Excel::download(new DocenteDetalhadoExport($codpes), "docente-detalhado_{$codpesParcial}xxx.xlsx");
     }
 
     public function apiMetricas(Request $request)
