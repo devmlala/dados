@@ -23,9 +23,6 @@
             [
                 'title' => 'Produção Acadêmica - Lattes',
                 'items' => [
-                    ['name' => 'Artigos Publicados', 'url' => '/lattes/docentes/artigos'],
-                    ['name' => 'Livros Publicados', 'url' => '/lattes/livros-publicados'],
-                    ['name' => 'Projetos de Pesquisa', 'url' => '/lattes/projetos-pesquisa'],
                     ['name' => 'Dashboard Geral', 'url' => '/lattes/dashboard'],
                 ]
             ],
