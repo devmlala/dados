@@ -134,6 +134,7 @@ class LattesController extends Controller
     //exports
     public function exportarDocente($codpes)
     {
+        $codpesParcial = substr((string)$codpes, 0, 3);
         return Excel::download(new DocenteExport($codpes), "docente_$codpes.xlsx");
     }
     public function exportarDetalhado($codpes)
