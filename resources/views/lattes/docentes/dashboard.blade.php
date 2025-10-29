@@ -11,7 +11,14 @@
                     <div class="flex-grow-1 ms-3">
                         <h4 class="fw-bold text-primary mb-1">Dashboard de Métricas Lattes</h4>
                         <p class="text-muted mb-0">
-                            Explore um panorama completo da produção acadêmica dos docentes. Utilize os filtros abaixo para refinar sua busca por <strong>nome</strong> ou <strong>departamento</strong>. Cada linha da tabela oferece um resumo das principais métricas, como <span class="text-primary">artigos</span>, <span class="text-success">livros</span>, <span class="text-info">orientações</span> e <span class="text-warning">prêmios</span>.
+                            Explore um panorama completo da produção acadêmica dos docentes. 
+                            Utilize os filtros abaixo para refinar sua busca por <strong>nome</strong> ou 
+                            <strong>departamento</strong>. 
+                            Cada linha da tabela oferece um resumo das principais métricas, 
+                             como <span class="text-primary">artigos</span>, <span class="text-success">livros</span>, 
+                             <span class="text-info">orientações</span> e <span class="text-warning">prêmios</span>. 
+                             Para obter uma planilha completa da produção acadêmica de um docente específico, clique em Ações
+                             e "Exportar Detalhado".
                         </p>
                     </div>
                 </div>
