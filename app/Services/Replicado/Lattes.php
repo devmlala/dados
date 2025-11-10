@@ -95,6 +95,55 @@ class Lattes extends LattesBase
     }
 
     /**
+     * Lista as linhas de pesquisa ativas de um docente.
+     *
+     * Este método sobrescreve o da classe pai para retornar mais detalhes
+     * e garantir que apenas linhas de pesquisa ativas sejam listadas.
+     *
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @return Array|Bool
+     */
+    public static function listarLinhasPesquisa($codpes, $lattes_array = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
+            return false;
+        }
+
+        $linhasDePesquisa = [];
+        $atuacoes = Arr::get($lattes, 'DADOS-GERAIS.ATUACOES-PROFISSIONAIS.ATUACAO-PROFISSIONAL', []);
+
+        // Normaliza para um array de atuações
+        if (!empty($atuacoes) && !is_numeric(key($atuacoes))) {
+            $atuacoes = [$atuacoes];
+        }
+
+        foreach ($atuacoes as $atuacao) {
+            $pesquisas = Arr::get($atuacao, 'ATIVIDADES-DE-PESQUISA-E-DESENVOLVIMENTO.PESQUISA-E-DESENVOLVIMENTO', []);
+
+            if (!empty($pesquisas) && !is_numeric(key($pesquisas))) {
+                $pesquisas = [$pesquisas];
+            }
+
+            foreach ($pesquisas as $pesquisa) {
+                $linhas = Arr::get($pesquisa, 'LINHA-DE-PESQUISA', []);
+                if (!empty($linhas) && !is_numeric(key($linhas))) {
+                    $linhas = [$linhas];
+                }
+
+                foreach ($linhas as $linha) {
+                    $attributes = $linha['@attributes'] ?? null;
+                    if ($attributes && ($attributes['FLAG-LINHA-DE-PESQUISA-ATIVA'] ?? 'NAO') === 'SIM') {
+                        $linhasDePesquisa[$attributes['TITULO-DA-LINHA-DE-PESQUISA']] = $attributes;
+                    }
+                }
+            }
+        }
+
+        return array_values($linhasDePesquisa); // Retorna apenas os valores, reindexando o array
+    }
+
+    /**
      * Helper para filtrar projetos por natureza.
      *
      * @param Integer $codpes

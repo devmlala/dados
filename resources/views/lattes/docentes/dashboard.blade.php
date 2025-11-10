@@ -5,9 +5,9 @@
         <div class="card shadow-sm mb-4 bg-light border-0">
             <div class="card-body">
                 <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-chalkboard-teacher fa-3x text-primary"></i>
-                    </div>
+                    <div class="flex-shrink-0">_
+                        <i class="fa-chalkboard-teacher fa-3x text-primary"></i>
+                    </div>_
                     <div class="flex-grow-1 ms-3">
                         <h4 class="fw-bold text-primary mb-1">Dashboard de Métricas Lattes</h4>
                         <p class="text-muted mb-0">
@@ -50,7 +50,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary mt-2"><i class="fas fa-filter"></i> Aplicar Filtros</button>
+                <button type="submit" class="btn btn-primary mt-2"><i class="fa-filter"></i> Aplicar Filtros</button>
                 <a href="{{ route('lattes.dashboard') }}" class="btn btn-outline-secondary mt-2">Limpar Filtros</a>
             </div>
         </form>
@@ -63,20 +63,21 @@
                             <tr>
                                 <th class="pl-4">Docente</th>
                                 <th class="text-center">Departamento</th>
-                                <th class="text-center"><i class="text-primary"></i>Artigos</th>
-                                <th class="text-center"><i class="text-success"></i>Livros</th>
-                                <th class="text-center"><i class="text-info"></i>Capítulos</th>
-                                <th class="text-center"><i class="text-info"></i> Proj. Pesquisa</th> {{-- Mantido --}}
-                                <th class="text-center"><i class="text-primary"></i>Proj. Extensão</th> {{-- Mantido --}}
-                                <th class="text-center"><i class="text-warning"></i>Proj. Desenvolvimento</th> {{-- Renomeado e agregado --}}
-                                <th class="text-center"><i class="text-primary"></i>Orientandos IC</th>
-                                <th class="text-center"><i class="text-success"></i>Orientandos Mestrado</th>
-                                <th class="text-center"><i class="text-info"></i>Orientandos Doutorado</th>
-                                <th class="text-center"><i class="text-warning"></i>Prêmios</th>
-                                <th class="text-center"><i class="text-warning"></i>Participação Eventos</th>
-                                <th class="text-center"><i class="text-muted"></i> Atualização</th>
-                                <th class="text-center"><i class="text-success"></i>Ações</th>
-                                <th class="text-center"><i class="text-success"></i>Exportar</th>
+                                <th class="text-center"><i class="fa-file-alt text-primary"></i> Artigos</th>
+                                <th class="text-center"><i class="fa-book text-success"></i> Livros</th>
+                                <th class="text-center"><i class="fa-book-open text-info"></i> Capítulos</th>
+                                <th class="text-center"><i class="fa-flask text-info"></i> Proj. Pesquisa</th> {{-- Mantido --}}
+                                <th class="text-center"><i class="fa-bullhorn text-primary"></i> Proj. Extensão</th> {{-- Mantido --}}
+                                <th class="text-center"><i class="fa-cogs text-warning"></i> Proj. Desenvolvimento</th> {{-- Renomeado e agregado --}}
+                                <th class="text-center"><i class="fa-sitemap text-secondary"></i> Linhas de Pesquisa</th>
+                                <th class="text-center"><i class="fa-user-graduate text-primary"></i> IC</th>
+                                <th class="text-center"><i class="fa-user-graduate text-success"></i> Mestrado</th>
+                                <th class="text-center"><i class="fa-user-graduate text-info"></i> Doutorado</th>
+                                <th class="text-center"><i class="fa-trophy text-warning"></i> Prêmios</th>
+                                <th class="text-center"><i class="fa-calendar-check text-warning"></i>Participação Eventos</th>
+                                <th class="text-center"><i class="fa-clock text-muted"></i> Atualização</th>
+                                <th class="text-center"><i class="fa-eye text-success"></i> Ações</th>
+                                <th class="text-center"><i class="fa-download text-success"></i> Exportar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -112,6 +113,9 @@
                                         {{ $docente['contagem']['projetos-desenvolvimento'] ?? 0 }} {{-- Agora inclui Ensino e Outros --}}
                                     </td>
                                     <td class="text-center">
+                                        {{ $docente['contagem']['linhas-pesquisa'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
                                         {{ $docente['contagem']['orientacoes-concluidas-ic'] ?? 0 }}
                                     </td>
                                     <td class="text-center">
@@ -131,20 +135,20 @@
                                     </td>
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-success" data-toggle="modal"
-                                            data-target="#modalResumo{{ $docente['docente']['codpes'] }}">
-                                            <i class="fas fa-eye"></i>
+                                            data-target="#modalResumo{{ $docente['docente']['codpes'] }}">_
+                                            <i class="fa-eye"></i>
                                         </button>
                                     </td>
                                     <td class="text-center">
                                         <a href="{{ route('lattes.exportar', $docente['docente']['codpes']) }}"
-                                            class="btn btn-sm btn-outline-primary" title="Exportar Excel">
-                                            <i class="fas fa-download"></i>
+                                            class="btn btn-sm btn-outline-primary" title="Exportar Excel">_
+                                            <i class="fa-download"></i>
                                         </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="15">
+                                    <td colspan="16">
                                         <div class="alert alert-warning mb-0">Nenhum docente encontrado ou dados indisponíveis.
                                         </div>
                                     </td>
@@ -171,7 +175,7 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <h6><i class="fas fa-graduation-cap"></i> Formação Acadêmica</h6>
+                                <h6><i class="fa-graduation-cap"></i> Formação Acadêmica</h6>
                                 <ul class="list-group small">
                                     @foreach(($docente['formacaoAcademica'] ?? []) as $formacao)
                                         <li class="list-group-item">{{ $formacao['titulo'] ?? 'N/A' }} -
@@ -184,7 +188,7 @@
                                 <div class="col-md-6">
                                     <div class="card mb-3">
                                         <div class="card-header bg-light">
-                                            <h6 class="mb-0"><i class="fas fa-chart-pie"></i> Estatísticas</h6>
+                                            <h6 class="mb-0"><i class="fa-chart-pie"></i> Estatísticas</h6>
                                         </div>
                                         <div class="card-body">
                                             <ul class="list-unstyled">
@@ -206,7 +210,7 @@
                                 <div class="col-md-6">
                                     <div class="card mb-3">
                                         <div class="card-header bg-light">
-                                            <h6 class="mb-0"><i class="fas fa-trophy"></i> Prêmios</h6>
+                                            <h6 class="mb-0"><i class="fa-trophy"></i> Prêmios</h6>
                                         </div>
                                         <div class="card-body">
                                             @if(!empty($docente['premios']))
@@ -226,16 +230,16 @@
                             </div>
 
                             <div class="mb-3">
-                                <h6><i class="fas fa-quote-left"></i> Resumo CV</h6>
+                                <h6><i class="fa-quote-left"></i> Resumo CV</h6>
                                 <div class="card card-body bg-light">
                                     {{ $docente['resumoCV'] ?? 'Resumo não disponível' }}
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <a href="{{ route('lattes.exportar_detalhado', $docente['docente']['codpes']) }}"
+                            <a href="{{ route('lattes.exportar_detalhado', $docente['docente']['codpes']) }}"_
                                 class="btn btn-outline-primary">
-                                <i class="fas fa-file-excel"></i> Exportar Dados Detalhados
+                                <i class="fa-file-excel"></i> Exportar Dados Detalhados
                             </a>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
                         </div>

@@ -176,6 +176,7 @@ class LattesMetricsService
             'orientacoes-concluidas-pos-doutorado' => count($orientacoesPosDoc),
             'orientacoes-concluidas-ic' => count($orientacoesIC),
             'eventos' => count($eventos),
+            'linhas-pesquisa' => count($linhasDePesquisa),
             'premios' => count($premios),
             //'ultima-atualizacao' => $ultimaAtualizacao,
         ];
@@ -194,6 +195,7 @@ class LattesMetricsService
             'orientacoesConcluidasDoc',
             'orientacoesMestrado',
             'orientacoesPosDoc',
+            'linhasDePesquisa',
             'linhasDePesquisa',
             'textosJornaisRevistas',
             'trabAnais',

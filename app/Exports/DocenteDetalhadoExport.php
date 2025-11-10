@@ -27,6 +27,7 @@ class DocenteDetalhadoExport implements WithMultipleSheets
             'eventos' => 'Participação em Eventos',
             'organizacaoEventos' => 'Organização de Eventos',
             'premios' => 'Prêmios e Títulos',
+            'linhasDePesquisa' => 'Linhas de Pesquisa',
             'orientacoesConcluidasDoc' => 'Orientações de Doutorado',
             'orientacoesMestrado' => 'Orientações de Mestrado',
             'orientacoesIC' => 'Orientações IC',
