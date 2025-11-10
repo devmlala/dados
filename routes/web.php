@@ -40,3 +40,6 @@ Route::prefix('lattes')->group(function () {
     Route::get('docente/{codpes}/export-detalhado', [LattesController::class, 'exportarDetalhado'])->name('lattes.exportar_detalhado');
     Route::get('api/metricas', [LattesController::class, 'apiMetricas'])->name('lattes.api.metricas');
 });
+
+// Em routes/web.php
+Route::get('/lattes/json/{codpes}', [LattesController::class, 'exportarJson'])->name('lattes.exportar_json');

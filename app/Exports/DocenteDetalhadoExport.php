@@ -27,6 +27,8 @@ class DocenteDetalhadoExport implements WithMultipleSheets
             'eventos' => 'Participação em Eventos',
             'organizacaoEventos' => 'Organização de Eventos',
             'premios' => 'Prêmios e Títulos',
+            'membroCorpoEditorial' => 'Membro de Corpo Editorial',
+            'membroComiteAssessoramento' => 'Membro Comitê Assessoramento',
             'linhasDePesquisa' => 'Linhas de Pesquisa',
             'orientacoesConcluidasDoc' => 'Orientações de Doutorado',
             'orientacoesMestrado' => 'Orientações de Mestrado',
@@ -62,6 +64,10 @@ class DocenteDetalhadoExport implements WithMultipleSheets
         );
         if (!empty($combinedDesenvolvimentoProjects)) {
             $sheets[] = new ArraySheetWithHeaderExport($this->processarProjetos($combinedDesenvolvimentoProjects), 'Projetos de Desenvolvimento');
+        }
+
+        if (!empty($this->dados['membroComiteAssessoramento'])) {
+            $sheets[] = new ArraySheetWithHeaderExport($this->processarMembroComiteAssessoramento($this->dados['membroComiteAssessoramento']), 'Membro Comitê Assessoramento');
         }
 
         foreach ($map as $key => $nome) {
@@ -164,5 +170,24 @@ class DocenteDetalhadoExport implements WithMultipleSheets
             }
         }
         return $bancasFormatadas;
+    }
+
+    /**
+     * Manipulador específico para Membro de Comitê de Assessoramento.
+     */
+    private function processarMembroComiteAssessoramento(array $data): array
+    {
+        $formatado = [];
+        foreach ($data as $item) {
+            $formatado[] = [
+                'NOME-INSTITUICAO' => $item['NOME-INSTITUICAO'] ?? 'N/A',
+                'ANO-INICIO' => $item['ANO-INICIO'] ?? 'N/A',
+                'ANO-FIM' => $item['ANO-FIM'] ?? 'N/A',
+                'TIPO-DE-VINCULO' => $item['TIPO-DE-VINCULO'] ?? 'N/A',
+                'OUTRO-VINCULO-INFORMADO' => $item['OUTRO-VINCULO-INFORMADO'] ?? 'N/A',
+                'OUTRAS-INFORMACOES' => $item['OUTRAS-INFORMACOES'] ?? 'N/A',
+            ];
+        }
+        return $formatado;
     }
 }

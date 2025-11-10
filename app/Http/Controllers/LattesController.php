@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\LattesMetricsService;
 use Uspdev\Replicado\Pessoa;
 use Uspdev\Replicado\Lattes;
+use App\Services\Replicado\Lattes as LattesService;
 use Illuminate\Support\Facades\Cache;
 
 use App\Exports\DocenteExport;
@@ -272,6 +273,30 @@ class LattesController extends Controller
         );
 
         return view($view, ['docentes' => $paginator, $dataKey => $dados, 'busca' => $busca, 'limit' => $limit]);
+    }
+
+
+
+    /**
+     * Exporta todos os dados do Lattes de um docente em formato JSON.
+     *
+     * @param int $codpes
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function exportarJson($codpes)
+    {
+        $lattesArray = LattesService::obterArray($codpes);
+
+        if (!$lattesArray) {
+            return response()->json(['error' => 'Dados do Lattes não encontrados para este código.'], 404);
+        }
+
+        $fileName = "lattes_{$codpes}.json";
+
+        return response()->json($lattesArray, 200, [
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+            'Content-Type' => 'application/json'
+        ]);
     }
 
 }

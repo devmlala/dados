@@ -144,6 +144,96 @@ class Lattes extends LattesBase
     }
 
     /**
+     * Lista as participações como membro de corpo editorial.
+     *
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @param String $tipo (opcional)
+     * @param Integer $limit_ini (opcional)
+     * @param Integer $limit_fim (opcional)
+     * @return Array|Bool
+     */
+    public static function listarMembroCorpoEditorial($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = -1, $limit_fim = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
+            return false;
+        }
+
+        $atuacoes = Arr::get($lattes, 'DADOS-GERAIS.ATUACOES-PROFISSIONAIS.ATUACAO-PROFISSIONAL', []);
+
+        if (!empty($atuacoes) && !is_numeric(key($atuacoes))) {
+            $atuacoes = [$atuacoes];
+        }
+
+        $corpoEditorial = [];
+        $i = 0;
+        foreach ($atuacoes as $atuacao) {
+            $vinculos = Arr::get($atuacao, 'VINCULOS', []);
+            if (!empty($vinculos) && !is_numeric(key($vinculos))) {
+                $vinculos = [$vinculos];
+            }
+
+            foreach ($vinculos as $vinculo) {
+                $vinculoAttrs = $vinculo['@attributes'] ?? [];
+                if (($vinculoAttrs['OUTRO-VINCULO-INFORMADO'] ?? '') === 'Membro de corpo editorial') {
+                    $i++;
+                    if (self::verificarFiltro($tipo, $vinculoAttrs['ANO-INICIO'], $limit_ini, $limit_fim, $i)) {
+                        $corpoEditorial[] = [
+                            'NOME-INSTITUICAO' => $atuacao['@attributes']['NOME-INSTITUICAO'] ?? 'N/A',
+                            'ANO-INICIO' => $vinculoAttrs['ANO-INICIO'] ?? 'N/A',
+                            'ANO-FIM' => $vinculoAttrs['ANO-FIM'] ?? 'N/A',
+                        ];
+                    }
+                }
+            }
+        }
+        return $corpoEditorial;
+    }
+
+    /**
+     * Lista as participações como membro de comitê de assessoramento.
+     *
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @param String $tipo (opcional)
+     * @param Integer $limit_ini (opcional)
+     * @param Integer $limit_fim (opcional)
+     * @return Array|Bool
+     */
+    public static function listarMembroComiteAssessoramento($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = -1, $limit_fim = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
+            return false;
+        }
+
+        $atuacoes = Arr::get($lattes, 'DADOS-GERAIS.ATUACOES-PROFISSIONAIS.ATUACAO-PROFISSIONAL', []);
+
+        if (!empty($atuacoes) && !is_numeric(key($atuacoes))) {
+            $atuacoes = [$atuacoes];
+        }
+
+        $comiteAssessoramento = [];
+        $i = 0;
+        foreach ($atuacoes as $atuacao) {
+            $vinculos = Arr::get($atuacao, 'VINCULOS', []);
+            if (!empty($vinculos) && !is_numeric(key($vinculos))) {
+                $vinculos = [$vinculos];
+            }
+
+            foreach ($vinculos as $vinculo) {
+                $vinculoAttrs = $vinculo['@attributes'] ?? [];
+                if (($vinculoAttrs['OUTRO-VINCULO-INFORMADO'] ?? '') === 'Membro de comitê de assessoramento') {
+                    $i++;
+                    if (self::verificarFiltro($tipo, $vinculoAttrs['ANO-INICIO'], $limit_ini, $limit_fim, $i)) {
+                        $comiteAssessoramento[] = $vinculoAttrs; // Retorna todos os atributos do vínculo
+                    }
+                }
+            }
+        }
+        return $comiteAssessoramento;
+    }
+
+    /**
      * Helper para filtrar projetos por natureza.
      *
      * @param Integer $codpes

@@ -142,6 +142,12 @@ class LattesMetricsService
         $eventos = LattesService::listarParticipacaoEventos($codpes, $lattesArray, 'registros', -1);
         $eventos = is_array($eventos) ? $eventos : [];
 
+        $membroCorpoEditorial = LattesService::listarMembroCorpoEditorial($codpes, $lattesArray, 'registros', -1);
+        $membroCorpoEditorial = is_array($membroCorpoEditorial) ? $membroCorpoEditorial : [];
+
+        $membroComiteAssessoramento = LattesService::listarMembroComiteAssessoramento($codpes, $lattesArray, 'registros', -1);
+        $membroComiteAssessoramento = is_array($membroComiteAssessoramento) ? $membroComiteAssessoramento : [];
+
         $premios = LattesService::listarPremios($codpes, $lattesArray);
         $premios = is_array($premios) ? $premios : [];
 
@@ -169,16 +175,15 @@ class LattesMetricsService
             'formacao-profissional' => count($formacaoProfissional),
             'organizacao-eventos' => count($organizacaoEventos),
             'material-didatico' => count($materialDidatico),
-            //'resumo-cv' => count($resumoCV),
-            //'orcid' => count($orcid),
             'orientacoes-concluidas-doutorado' => count($orientacoesConcluidasDoc),
             'orientacoes-concluidas-mestrado' => count($orientacoesMestrado),
             'orientacoes-concluidas-pos-doutorado' => count($orientacoesPosDoc),
             'orientacoes-concluidas-ic' => count($orientacoesIC),
             'eventos' => count($eventos),
+            'membro-comite-assessoramento' => count($membroComiteAssessoramento),
+            'membro-corpo-editorial' => count($membroCorpoEditorial),
             'linhas-pesquisa' => count($linhasDePesquisa),
             'premios' => count($premios),
-            //'ultima-atualizacao' => $ultimaAtualizacao,
         ];
 
 
@@ -195,6 +200,8 @@ class LattesMetricsService
             'orientacoesConcluidasDoc',
             'orientacoesMestrado',
             'orientacoesPosDoc',
+            'membroComiteAssessoramento',
+            'membroCorpoEditorial',
             'linhasDePesquisa',
             'linhasDePesquisa',
             'textosJornaisRevistas',
@@ -210,6 +217,8 @@ class LattesMetricsService
             'organizacaoEventos',
             'materialDidatico',
             'eventos',
+            'membroComiteAssessoramento',
+            'membroCorpoEditorial',
             'resumoCV',
             'ultimaAtualizacao',
             'orcid',

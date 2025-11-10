@@ -73,6 +73,8 @@
                                 <th class="text-center"><i class="fa-user-graduate text-primary"></i> IC</th>
                                 <th class="text-center"><i class="fa-user-graduate text-success"></i> Mestrado</th>
                                 <th class="text-center"><i class="fa-user-graduate text-info"></i> Doutorado</th>
+                                <th class="text-center"><i class="fa-edit text-primary"></i>Membro Corpo Editorial</th>
+                                <th class="text-center"><i class="fa-users-cog text-primary"></i> Membro Comitê Assessoramento</th>
                                 <th class="text-center"><i class="fa-trophy text-warning"></i> Prêmios</th>
                                 <th class="text-center"><i class="fa-calendar-check text-warning"></i>Participação Eventos</th>
                                 <th class="text-center"><i class="fa-clock text-muted"></i> Atualização</th>
@@ -125,6 +127,12 @@
                                         {{ $docente['contagem']['orientacoes-concluidas-doutorado'] ?? 0 }}
                                     </td>
                                     <td class="text-center">
+                                        {{ $docente['contagem']['membro-corpo-editorial'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['membro-comite-assessoramento'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
                                         {{ $docente['contagem']['premios'] ?? 0 }}
                                     </td>
                                     <td class="text-center">
@@ -148,7 +156,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="16">
+                                    <td colspan="18">
                                         <div class="alert alert-warning mb-0">Nenhum docente encontrado ou dados indisponíveis.
                                         </div>
                                     </td>
@@ -237,9 +245,13 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <a href="{{ route('lattes.exportar_detalhado', $docente['docente']['codpes']) }}"_
+                            <a href="{{ route('lattes.exportar_detalhado', $docente['docente']['codpes']) }}"
                                 class="btn btn-outline-primary">
                                 <i class="fa-file-excel"></i> Exportar Dados Detalhados
+                            </a>
+                            <a href="{{ route('lattes.exportar_json', $docente['docente']['codpes']) }}"
+                                class="btn btn-outline-info">
+                                <i class="fa-file-code"></i> Exportar JSON Completo
                             </a>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
                         </div>
