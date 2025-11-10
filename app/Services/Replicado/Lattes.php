@@ -93,4 +93,107 @@ class Lattes extends LattesBase
 
         return $eventos_filtrados;
     }
+
+    /**
+     * Helper para filtrar projetos por natureza.
+     *
+     * @param Integer $codpes
+     * @param String $natureza
+     * @param Array $lattes_array
+     * @param String $tipo
+     * @param Integer $limit_ini
+     * @param Integer $limit_fim
+     * @return Array|Bool
+     */
+    protected static function listarProjetosPorNatureza($codpes, $natureza, $lattes_array = null, $tipo = 'registros', $limit_ini = 5, $limit_fim = null)
+    {
+        // Chama o método da classe pai para obter todos os projetos, que já aplica a filtragem por ano/limite
+        $allProjects = parent::listarProjetosPesquisa($codpes, $lattes_array, $tipo, $limit_ini, $limit_fim);
+
+        if (!$allProjects) {
+            return false;
+        }
+
+        $filteredProjects = Arr::where($allProjects, function ($project) use ($natureza) {
+            return Arr::get($project, 'NATUREZA') === $natureza;
+        });
+
+        return array_values($filteredProjects); // Reindexa o array
+    }
+
+    /**
+     * Recebe o número USP e devolve array com os projetos de pesquisa.
+     * Este método sobrescreve o método da classe pai para retornar apenas projetos de natureza 'PESQUISA'.
+     *
+     * @param Integer $codpes = Número USP
+     * @param Array $lattes_array (opcional) Lattes convertido para array
+     * @param String $tipo (opcional) Valores possíveis para determinar o limite: 'anual' e 'registros', 'periodo'. Default: últimos 5 registros.
+     * @param Integer $limit_ini (opcional) Limite de retorno conforme o tipo.
+     * @param Integer $limit_fim (opcional) Se o tipo for periodo, irá pegar os registros do ano entre limit_ini e limit_fim
+     * @return Array|Bool
+     */
+    public static function listarProjetosPesquisa($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = 5, $limit_fim = null)
+    {
+        return self::listarProjetosPorNatureza($codpes, 'PESQUISA', $lattes_array, $tipo, $limit_ini, $limit_fim);
+    }
+
+    /**
+     * Recebe o número USP e devolve array com os projetos de extensão.
+     *
+     * @param Integer $codpes = Número USP
+     * @param Array $lattes_array (opcional) Lattes convertido para array
+     * @param String $tipo (opcional) Valores possíveis para determinar o limite: 'anual' e 'registros', 'periodo'. Default: últimos 5 registros.
+     * @param Integer $limit_ini (opcional) Limite de retorno conforme o tipo.
+     * @param Integer $limit_fim (opcional) Se o tipo for periodo, irá pegar os registros do ano entre limit_ini e limit_fim
+     * @return Array|Bool
+     */
+    public static function listarProjetosExtensao($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = 5, $limit_fim = null)
+    {
+        return self::listarProjetosPorNatureza($codpes, 'EXTENSAO', $lattes_array, $tipo, $limit_ini, $limit_fim);
+    }
+
+    /**
+     * Recebe o número USP e devolve array com os projetos de desenvolvimento.
+     *
+     * @param Integer $codpes = Número USP
+     * @param Array $lattes_array (opcional) Lattes convertido para array
+     * @param String $tipo (opcional) Valores possíveis para determinar o limite: 'anual' e 'registros', 'periodo'. Default: últimos 5 registros.
+     * @param Integer $limit_ini (opcional) Limite de retorno conforme o tipo.
+     * @param Integer $limit_fim (opcional) Se o tipo for periodo, irá pegar os registros do ano entre limit_ini e limit_fim
+     * @return Array|Bool
+     */
+    public static function listarProjetosDesenvolvimento($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = 5, $limit_fim = null)
+    {
+        return self::listarProjetosPorNatureza($codpes, 'DESENVOLVIMENTO', $lattes_array, $tipo, $limit_ini, $limit_fim);
+    }
+
+    /**
+     * Recebe o número USP e devolve array com os projetos de ensino.
+     *
+     * @param Integer $codpes = Número USP
+     * @param Array $lattes_array (opcional) Lattes convertido para array
+     * @param String $tipo (opcional) Valores possíveis para determinar o limite: 'anual' e 'registros', 'periodo'. Default: últimos 5 registros.
+     * @param Integer $limit_ini (opcional) Limite de retorno conforme o tipo.
+     * @param Integer $limit_fim (opcional) Se o tipo for periodo, irá pegar os registros do ano entre limit_ini e limit_fim
+     * @return Array|Bool
+     */
+    public static function listarProjetosEnsino($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = 5, $limit_fim = null)
+    {
+        return self::listarProjetosPorNatureza($codpes, 'ENSINO', $lattes_array, $tipo, $limit_ini, $limit_fim);
+    }
+
+    /**
+     * Recebe o número USP e devolve array com outros tipos de projetos.
+     *
+     * @param Integer $codpes = Número USP
+     * @param Array $lattes_array (opcional) Lattes convertido para array
+     * @param String $tipo (opcional) Valores possíveis para determinar o limite: 'anual' e 'registros', 'periodo'. Default: últimos 5 registros.
+     * @param Integer $limit_ini (opcional) Limite de retorno conforme o tipo.
+     * @param Integer $limit_fim (opcional) Se o tipo for periodo, irá pegar os registros do ano entre limit_ini e limit_fim
+     * @return Array|Bool
+     */
+    public static function listarOutrosProjetos($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = 5, $limit_fim = null)
+    {
+        return self::listarProjetosPorNatureza($codpes, 'OUTRA', $lattes_array, $tipo, $limit_ini, $limit_fim);
+    }
 }

@@ -63,25 +63,24 @@
                             <tr>
                                 <th class="pl-4">Docente</th>
                                 <th class="text-center">Departamento</th>
-                                <th class="text-center"><i class="fas fa-file-alt text-primary"></i> Artigos</th>
-                                <th class="text-center"><i class="fas fa-book text-success"></i> Livros</th>
-                                <th class="text-center"><i class="fas fa-book-open text-info"></i> Capítulos</th>
-                                <th class="text-center"><i class="fas fa-project-diagram text-info"></i> Projetos</th>
-                                <th class="text-center"><i class="fas fa-user-graduate text-primary"></i> IC</th>
-                                <th class="text-center"><i class="fas fa-user-graduate text-success"></i> Mestrado</th>
-                                <th class="text-center"><i class="fas fa-user-graduate text-info"></i> Doutorado</th>
-                                <th class="text-center"><i class="fas fa-trophy text-warning"></i> Prêmios</th>
-                                <th class="text-center"><i class="fas fa-calendar-check text-warning"></i> Eventos</th>
-                                <th class="text-center"><i class="fas fa-calendar-alt text-muted"></i> Atualização</th>
-                                <th class="text-center"><i class="fas fa-file-export text-success"></i> Ações</th>
-                                <th class="text-center"><i class="fas fa-file-export text-success"></i> Exportar</th>
+                                <th class="text-center"><i class="text-primary"></i>Artigos</th>
+                                <th class="text-center"><i class="text-success"></i>Livros</th>
+                                <th class="text-center"><i class="text-info"></i>Capítulos</th>
+                                <th class="text-center"><i class="text-info"></i> Proj. Pesquisa</th> {{-- Mantido --}}
+                                <th class="text-center"><i class="text-primary"></i>Proj. Extensão</th> {{-- Mantido --}}
+                                <th class="text-center"><i class="text-warning"></i>Proj. Desenvolvimento</th> {{-- Renomeado e agregado --}}
+                                <th class="text-center"><i class="text-primary"></i>Orientandos IC</th>
+                                <th class="text-center"><i class="text-success"></i>Orientandos Mestrado</th>
+                                <th class="text-center"><i class="text-info"></i>Orientandos Doutorado</th>
+                                <th class="text-center"><i class="text-warning"></i>Prêmios</th>
+                                <th class="text-center"><i class="text-warning"></i>Participação Eventos</th>
+                                <th class="text-center"><i class="text-muted"></i> Atualização</th>
+                                <th class="text-center"><i class="text-success"></i>Ações</th>
+                                <th class="text-center"><i class="text-success"></i>Exportar</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($docentes as $docente)
-                            @php
-                              //  dd($docente['eventos']);
-                            @endphp
                                 <tr class="border-bottom">
                                     <td class="pl-4">
                                         <strong>{{ $docente['docente']['nompes'] }}</strong>
@@ -104,7 +103,13 @@
                                         {{ $docente['contagem']['capitulos-livros'] ?? 0 }}
                                     </td>
                                     <td class="text-center">
-                                        {{ $docente['contagem']['projetos'] ?? 0 }}
+                                        {{ $docente['contagem']['projetos-pesquisa'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['projetos-extensao'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['projetos-desenvolvimento'] ?? 0 }} {{-- Agora inclui Ensino e Outros --}}
                                     </td>
                                     <td class="text-center">
                                         {{ $docente['contagem']['orientacoes-concluidas-ic'] ?? 0 }}
@@ -139,7 +144,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="14">
+                                    <td colspan="15">
                                         <div class="alert alert-warning mb-0">Nenhum docente encontrado ou dados indisponíveis.
                                         </div>
                                     </td>

@@ -8,17 +8,17 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class DocenteDetalhadoExport implements WithMultipleSheets
 {
     protected $codpes;
+    protected $dados;
 
     public function __construct($codpes)
     {
         $this->codpes = $codpes;
+        $service = new LattesMetricsService();
+        $this->dados = $service->getMetricasDetalhadas($this->codpes);
     }
 
     public function sheets(): array
     {
-        $service = new LattesMetricsService();
-        $dados = $service->getMetricasDetalhadas($this->codpes);
-
         // Mapeia as chaves de dados para nomes de planilhas legíveis
         $map = [
             'artigos' => 'Artigos',
@@ -26,7 +26,6 @@ class DocenteDetalhadoExport implements WithMultipleSheets
             'capitulosLivros' => 'Capítulos',
             'eventos' => 'Participação em Eventos',
             'organizacaoEventos' => 'Organização de Eventos',
-            'projetos' => 'Projetos',
             'premios' => 'Prêmios e Títulos',
             'orientacoesConcluidasDoc' => 'Orientações de Doutorado',
             'orientacoesMestrado' => 'Orientações de Mestrado',
@@ -44,16 +43,37 @@ class DocenteDetalhadoExport implements WithMultipleSheets
         ];
 
         $sheets = [];
+        
+        // Add specific project sheets
+        if (!empty($this->dados['projetosPesquisa'])) {
+            $sheets[] = new ArraySheetWithHeaderExport($this->processarProjetos($this->dados['projetosPesquisa']), 'Projetos de Pesquisa');
+        }
+
+        if (!empty($this->dados['projetosExtensao'])) {
+            $sheets[] = new ArraySheetWithHeaderExport($this->processarProjetos($this->dados['projetosExtensao']), 'Projetos de Extensão');
+        }
+
+        // Combine Desenvolvimento, Ensino, and Outros into a single "Projetos de Desenvolvimento" sheet
+        $combinedDesenvolvimentoProjects = array_merge(
+            $this->dados['projetosDesenvolvimento'] ?? [],
+            $this->dados['projetosEnsino'] ?? [],
+            $this->dados['outrosProjetos'] ?? []
+        );
+        if (!empty($combinedDesenvolvimentoProjects)) {
+            $sheets[] = new ArraySheetWithHeaderExport($this->processarProjetos($combinedDesenvolvimentoProjects), 'Projetos de Desenvolvimento');
+        }
 
         foreach ($map as $key => $nome) {
-            if (!empty($dados[$key]) && is_array($dados[$key])) { 
-                // Verifica se existe um manipulador específico para esta chave de dados
-                $handlerMethod = 'processar' . ucfirst($key);
-                $processedData = method_exists($this, $handlerMethod)
-                    ? $this->{$handlerMethod}($dados[$key])
-                    : $this->processarDadosGenericos($dados[$key]);
+            // Skip project keys as they are handled above
+            if (!in_array($key, ['projetosPesquisa', 'projetosExtensao', 'projetosDesenvolvimento', 'projetosEnsino', 'outrosProjetos'])) {
+                if (!empty($this->dados[$key]) && is_array($this->dados[$key])) {
+                    $handlerMethod = 'processar' . ucfirst($key);
+                    $processedData = method_exists($this, $handlerMethod)
+                        ? $this->{$handlerMethod}($this->dados[$key])
+                        : $this->processarDadosGenericos($this->dados[$key]);
 
-                $sheets[] = new ArraySheetWithHeaderExport($processedData, $nome);
+                    $sheets[] = new ArraySheetWithHeaderExport($processedData, $nome);
+                }
             }
         }
 
@@ -72,6 +92,33 @@ class DocenteDetalhadoExport implements WithMultipleSheets
             }
         }
         return $data;
+    }
+
+    /**
+     * Manipulador específico para projetos (Pesquisa, Extensão, Desenvolvimento).
+     * Assumes the structure of project data from Lattes.
+     */
+    private function processarProjetos(array $data): array
+    {
+        $projetosFormatados = [];
+        foreach ($data as $projeto) {
+            $equipe = '';
+            if (isset($projeto['EQUIPE-DO-PROJETO']) && is_array($projeto['EQUIPE-DO-PROJETO'])) {
+                $nomesEquipe = array_map(fn($membro) => $membro['NOME-COMPLETO'] ?? 'N/A', $projeto['EQUIPE-DO-PROJETO']);
+                $equipe = implode('; ', $nomesEquipe);
+            }
+
+            $projetosFormatados[] = [
+                'NOME-DO-PROJETO' => $projeto['NOME-DO-PROJETO'] ?? 'N/A',
+                'ANO-INICIO' => $projeto['ANO-INICIO'] ?? 'N/A',
+                'ANO-FIM' => $projeto['ANO-FIM'] ?? 'N/A',
+                'SITUACAO' => $projeto['SITUACAO'] ?? 'N/A',
+                'NATUREZA' => $projeto['NATUREZA'] ?? 'N/A',
+                'DESCRICAO-DO-PROJETO' => $projeto['DESCRICAO-DO-PROJETO'] ?? 'N/A',
+                'EQUIPE-DO-PROJETO' => $equipe,
+            ];
+        }
+        return $projetosFormatados;
     }
 
     /**

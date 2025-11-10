@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Services;
-
-use Uspdev\Replicado\Lattes;
+ 
 use App\Services\Replicado\Lattes as LattesService;
 
 use Uspdev\Replicado\Pessoa;
@@ -30,7 +29,11 @@ class LattesMetricsService
                 'artigos' => $metricas['artigos'],
                 'livros' => $metricas['livros'],
                 'capitulosLivros' => $metricas['capitulosLivros'],
-                'projetos' => $metricas['projetos'],
+                'projetosPesquisa' => $metricas['projetosPesquisa'],
+                'projetosExtensao' => $metricas['projetosExtensao'],
+                'projetosEnsino' => $metricas['projetosEnsino'],
+                'projetosDesenvolvimento' => $metricas['projetosDesenvolvimento'],
+                'outrosProjetos' => $metricas['outrosProjetos'],
                 'orientacoesIC' => $metricas['orientacoesIC'],
                 'orientacoesConcluidasDoc' => $metricas['orientacoesConcluidasDoc'],
                 'orientacoesMestrado' => $metricas['orientacoesMestrado'],
@@ -50,93 +53,109 @@ class LattesMetricsService
      */
     public function getMetricasDetalhadas(int $codpes): array
     {
-        $lattesArray = Lattes::obterArray($codpes);
+        $lattesArray = LattesService::obterArray($codpes);
 
-        $artigos = Lattes::listarArtigos($codpes, $lattesArray, 'registros', -1);
+        $artigos = LattesService::listarArtigos($codpes, $lattesArray, 'registros', -1);
         //$artigos = is_array($artigos) ? $artigos : [];
 
-        $livros = Lattes::listarLivrosPublicados($codpes, $lattesArray, 'registros', -1);
+        $livros = LattesService::listarLivrosPublicados($codpes, $lattesArray, 'registros', -1);
         $livros = is_array($livros) ? $livros : [];
 
-        $projetos = Lattes::listarProjetosPesquisa($codpes, $lattesArray);
-        $projetos = is_array($projetos) ? $projetos : [];
+        $projetosPesquisa = LattesService::listarProjetosPesquisa($codpes, $lattesArray, 'registros', -1);
+        $projetosPesquisa = is_array($projetosPesquisa) ? $projetosPesquisa : [];
 
-        $linhasDePesquisa = Lattes::listarLinhasPesquisa($codpes, $lattesArray);
+        $projetosExtensao = LattesService::listarProjetosExtensao($codpes, $lattesArray, 'registros', -1);
+        $projetosExtensao = is_array($projetosExtensao) ? $projetosExtensao : [];
+
+        $projetosEnsino = LattesService::listarProjetosEnsino($codpes, $lattesArray, 'registros', -1);
+        $projetosEnsino = is_array($projetosEnsino) ? $projetosEnsino : [];
+
+        $projetosDesenvolvimento = LattesService::listarProjetosDesenvolvimento($codpes, $lattesArray, 'registros', -1);
+        $projetosDesenvolvimento = is_array($projetosDesenvolvimento) ? $projetosDesenvolvimento : [];
+
+        $outrosProjetos = LattesService::listarOutrosProjetos($codpes, $lattesArray, 'registros', -1);
+        $outrosProjetos = is_array($outrosProjetos) ? $outrosProjetos : [];
+
+        $linhasDePesquisa = LattesService::listarLinhasPesquisa($codpes, $lattesArray);
         $linhasDePesquisa = is_array($linhasDePesquisa) ? $linhasDePesquisa : [];
 
-        $textosJornaisRevistas = Lattes::listarTextosJornaisRevistas($codpes, $lattesArray, 'registros', -1);
+        $textosJornaisRevistas = LattesService::listarTextosJornaisRevistas($codpes, $lattesArray, 'registros', -1);
         $textosJornaisRevistas = is_array($textosJornaisRevistas) ? $textosJornaisRevistas : [];
 
-        $trabAnais = Lattes::listarTrabalhosAnais($codpes, $lattesArray, 'registros', -1);
+        $trabAnais = LattesService::listarTrabalhosAnais($codpes, $lattesArray, 'registros', -1);
         $trabAnais = is_array($trabAnais) ? $trabAnais : [];
 
-        $trabTecnicos = Lattes::listarTrabalhosTecnicos($codpes, $lattesArray, 'registros', -1);
+        $trabTecnicos = LattesService::listarTrabalhosTecnicos($codpes, $lattesArray, 'registros', -1);
         $trabTecnicos = is_array($trabTecnicos) ? $trabTecnicos : [];
 
-        $apresTrab = Lattes::listarApresentacaoTrabalho($codpes, $lattesArray, 'registros', -1);
+        $apresTrab = LattesService::listarApresentacaoTrabalho($codpes, $lattesArray, 'registros', -1);
         $apresTrab = is_array($apresTrab) ? $apresTrab : [];
 
-        $capitulosLivros = Lattes::listarCapitulosLivros($codpes, $lattesArray, 'registros', -1);
+        $capitulosLivros = LattesService::listarCapitulosLivros($codpes, $lattesArray, 'registros', -1);
         $capitulosLivros = is_array($capitulosLivros) ? $capitulosLivros : [];
 
-        $bancasMestrado = Lattes::retornarBancaMestrado($codpes, $lattesArray);
+        $bancasMestrado = LattesService::retornarBancaMestrado($codpes, $lattesArray);
         $bancasMestrado = is_array($bancasMestrado) ? $bancasMestrado : [];
 
-        $bancasDoutorado = Lattes::retornarBancaDoutorado($codpes, $lattesArray);
+        $bancasDoutorado = LattesService::retornarBancaDoutorado($codpes, $lattesArray);
         $bancasDoutorado = is_array($bancasDoutorado) ? $bancasDoutorado : [];
 
-        $relatoriosPesquisa = Lattes::listarRelatorioPesquisa($codpes, $lattesArray, 'registros', -1);
+        $relatoriosPesquisa = LattesService::listarRelatorioPesquisa($codpes, $lattesArray, 'registros', -1);
         $relatoriosPesquisa = is_array($relatoriosPesquisa) ? $relatoriosPesquisa : [];
 
-        $formacaoAcademica = Lattes::retornarFormacaoAcademica($codpes, $lattesArray);
+        $formacaoAcademica = LattesService::retornarFormacaoAcademica($codpes, $lattesArray);
         $formacaoAcademica = is_array($formacaoAcademica) ? $formacaoAcademica : [];
 
-        $formacaoProfissional = Lattes::listarFormacaoProfissional($codpes, $lattesArray, 'periodo', -1);
+        $formacaoProfissional = LattesService::listarFormacaoProfissional($codpes, $lattesArray, 'periodo', -1);
         $formacaoProfissional = is_array($formacaoProfissional) ? $formacaoProfissional : [];
 
-        $premios = Lattes::listarPremios($codpes, $lattesArray);
+        $premios = LattesService::listarPremios($codpes, $lattesArray);
         $premios = is_array($premios) ? $premios : [];
 
-        $organizacaoEventos = Lattes::listarOrganizacaoEvento($codpes, $lattesArray, 'registros', -1);
+        $organizacaoEventos = LattesService::listarOrganizacaoEvento($codpes, $lattesArray, 'registros', -1);
         $organizacaoEventos = is_array($organizacaoEventos) ? $organizacaoEventos : [];
 
-        $materialDidatico = Lattes::listarMaterialDidaticoInstrucional($codpes, $lattesArray, 'registros', -1);
+        $materialDidatico = LattesService::listarMaterialDidaticoInstrucional($codpes, $lattesArray, 'registros', -1);
         $materialDidatico = is_array($materialDidatico) ? $materialDidatico : [];
 
-        $resumoCV = Lattes::retornarResumoCV($codpes, 'pt', $lattesArray);
+        $resumoCV = LattesService::retornarResumoCV($codpes, 'pt', $lattesArray);
         $resumoCV = is_string($resumoCV) ? $resumoCV : [];
 
-        $ultimaAtualizacao = Lattes::retornarUltimaAtualizacao($codpes, $lattesArray);
+        $ultimaAtualizacao = LattesService::retornarUltimaAtualizacao($codpes, $lattesArray);
         $ultimaAtualizacao = is_array($ultimaAtualizacao) ? $ultimaAtualizacao : [];
 
-        $orcid = Lattes::retornarOrcidID($codpes, $lattesArray);
+        $orcid = LattesService::retornarOrcidID($codpes, $lattesArray);
         $orcid = is_array($orcid) ? $orcid : [];
 
-        $orientacoesConcluidasDoc = Lattes::listarOrientacoesConcluidasDoutorado($codpes, $lattesArray, 'registros', -1);
+        $orientacoesConcluidasDoc = LattesService::listarOrientacoesConcluidasDoutorado($codpes, $lattesArray, 'registros', -1);
         $orientacoesConcluidasDoc = is_array($orientacoesConcluidasDoc) ? $orientacoesConcluidasDoc : [];
 
-        $orientacoesMestrado = Lattes::listarOrientacoesConcluidasMestrado($codpes, $lattesArray, 'registros', -1);
+        $orientacoesMestrado = LattesService::listarOrientacoesConcluidasMestrado($codpes, $lattesArray, 'registros', -1);
         $orientacoesMestrado = is_array($orientacoesMestrado) ? $orientacoesMestrado : [];
 
-        $orientacoesPosDoc = Lattes::listarOrientacoesConcluidasPosDoutorado($codpes, $lattesArray, 'registros', -1);
+        $orientacoesPosDoc = LattesService::listarOrientacoesConcluidasPosDoutorado($codpes, $lattesArray, 'registros', -1);
         $orientacoesPosDoc = is_array($orientacoesPosDoc) ? $orientacoesPosDoc : [];
 
-        $orientacoesIC = Lattes::listarOrientacoesConcluidasIC($codpes, $lattesArray, 'registros', -1);
+        $orientacoesIC = LattesService::listarOrientacoesConcluidasIC($codpes, $lattesArray, 'registros', -1);
         $orientacoesIC = is_array($orientacoesIC) ? $orientacoesIC : [];
 
         $eventos = LattesService::listarParticipacaoEventos($codpes, $lattesArray, 'registros', -1);
         $eventos = is_array($eventos) ? $eventos : [];
 
-        $premios = Lattes::listarPremios($codpes, $lattesArray);
+        $premios = LattesService::listarPremios($codpes, $lattesArray);
         $premios = is_array($premios) ? $premios : [];
 
-        $ultimaAtualizacao = Lattes::retornarUltimaAtualizacao($codpes, $lattesArray);
+        $ultimaAtualizacao = LattesService::retornarUltimaAtualizacao($codpes, $lattesArray);
 
 
         $contagem = [
             'artigos' => count($artigos),
             'livros' => count($livros),
-            'projetos' => count($projetos),
+            'projetos-pesquisa' => count($projetosPesquisa),
+            'projetos-extensao' => count($projetosExtensao),
+            'projetos-ensino' => count($projetosEnsino),
+            'projetos-desenvolvimento' => count($projetosDesenvolvimento),
+            'outros-projetos' => count($outrosProjetos),
             'linhas-de-pesquisa' => count($linhasDePesquisa),
             'textos-jornais-revistas' => count($textosJornaisRevistas),
             'trabalhos-anais' => count($trabAnais),
@@ -166,7 +185,11 @@ class LattesMetricsService
             'artigos',
             'livros',
             'capitulosLivros',
-            'projetos',
+            'projetosPesquisa',
+            'projetosExtensao',
+            'projetosEnsino',
+            'projetosDesenvolvimento',
+            'outrosProjetos',
             'orientacoesIC',
             'orientacoesConcluidasDoc',
             'orientacoesMestrado',
@@ -198,12 +221,16 @@ class LattesMetricsService
         return [
             'artigos' => [],
             'livros' => [],
-            'projetos' => [],
+            'projetosPesquisa' => [],
+            'projetosExtensao' => [],
+            'projetosEnsino' => [],
+            'projetosDesenvolvimento' => [],
+            'outrosProjetos' => [],
             'orientacoesIC' => [],
             'contagem' => [
                 'artigos' => 0,
                 'livros' => 0,
-                'projetos' => 0,
+                'projetos-pesquisa' => 0,
                 'orientacoes' => 0,
             ],
             'ultimaAtualizacao' => null,
@@ -224,7 +251,11 @@ class LattesMetricsService
                 'artigos' => $metricas['artigos'],
                 'livros' => $metricas['livros'],
                 'capitulosLivros' => $metricas['capitulosLivros'],
-                'projetos' => $metricas['projetos'],
+                'projetosPesquisa' => $metricas['projetosPesquisa'],
+                'projetosExtensao' => $metricas['projetosExtensao'],
+                'projetosEnsino' => $metricas['projetosEnsino'],
+                'projetosDesenvolvimento' => $metricas['projetosDesenvolvimento'],
+                'outrosProjetos' => $metricas['outrosProjetos'],
                 'orientacoesIC' => $metricas['orientacoesIC'],
                 'orientacoesConcluidasDoc' => $metricas['orientacoesConcluidasDoc'],
                 'orientacoesMestrado' => $metricas['orientacoesMestrado'],
