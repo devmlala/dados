@@ -234,6 +234,303 @@ class Lattes extends LattesBase
     }
 
     /**
+     * Lista as "Outras Informações Relevantes".
+     *
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @return Array|Bool
+     */
+    public static function listarOutrasInformacoesRelevantes($codpes, $lattes_array = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
+            return false;
+        }
+
+        $informacoes = Arr::get($lattes, 'DADOS-GERAIS.OUTRAS-INFORMACOES-RELEVANTES.@attributes.OUTRAS-INFORMACOES-RELEVANTES', '');
+
+        if (empty($informacoes)) {
+            return [];
+        }
+
+        // O texto é um bloco único com itens separados por ponto e vírgula e quebras de linha.
+        // Vamos dividi-los em um array para contagem e melhor exibição.
+        $items = preg_split('/;[ \n\r\t]+/', $informacoes);
+
+        // Remove itens vazios resultantes da separação e limpa espaços em branco
+        return array_filter(array_map('trim', $items));
+    }
+
+    /**
+     * Lista todas as orientações em andamento (Mestrado, Doutorado, etc.).
+     *
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @param String $tipo (opcional)
+     * @param Integer $limit_ini (opcional)
+     * @param Integer $limit_fim (opcional)
+     * @return Array|Bool
+     */
+    public static function listarOrientacoesEmAndamento($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = -1, $limit_fim = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
+            return false;
+        }
+
+        $orientacoes = [];
+        $tiposDeOrientacao = [
+            'ORIENTACAO-EM-ANDAMENTO-DE-MESTRADO' => 'DADOS-BASICOS-DA-ORIENTACAO-EM-ANDAMENTO-DE-MESTRADO',
+            'ORIENTACAO-EM-ANDAMENTO-DE-DOUTORADO' => 'DADOS-BASICOS-DA-ORIENTACAO-EM-ANDAMENTO-DE-DOUTORADO',
+            'ORIENTACAO-EM-ANDAMENTO-DE-POS-DOUTORADO' => 'DADOS-BASICOS-DA-ORIENTACAO-EM-ANDAMENTO-DE-POS-DOUTORADO',
+            'ORIENTACAO-EM-ANDAMENTO-DE-INICIACAO-CIENTIFICA' => 'DADOS-BASICOS-DA-ORIENTACAO-EM-ANDAMENTO-DE-INICIACAO-CIENTIFICA',
+        ];
+
+        $caminhoBase = 'DADOS-COMPLEMENTARES.ORIENTACOES-EM-ANDAMENTO';
+
+        foreach ($tiposDeOrientacao as $chaveOrientacao => $chaveDadosBasicos) {
+            $items = Arr::get($lattes, "{$caminhoBase}.{$chaveOrientacao}", []);
+
+            if (!empty($items) && !is_numeric(key($items))) {
+                $items = [$items];
+            }
+
+            foreach ($items as $item) {
+                $dadosBasicos = Arr::get($item, "{$chaveDadosBasicos}.@attributes", []);
+                $detalhamento = Arr::get($item, str_replace('DADOS-BASICOS', 'DETALHAMENTO', $chaveDadosBasicos) . '.@attributes', []);
+
+                $orientacoes[] = [
+                    'NATUREZA' => $dadosBasicos['NATUREZA'] ?? 'N/A',
+                    'TITULO' => $dadosBasicos['TITULO-DO-TRABALHO'] ?? 'N/A',
+                    'ANO' => $dadosBasicos['ANO'] ?? 'N/A',
+                    'NOME_ORIENTANDO' => $detalhamento['NOME-DO-ORIENTANDO'] ?? 'N/A',
+                    'TIPO_ORIENTACAO' => $detalhamento['TIPO-DE-ORIENTACAO'] ?? 'N/A',
+                    'INSTITUICAO' => $detalhamento['NOME-INSTITUICAO'] ?? 'N/A',
+                ];
+            }
+        }
+
+        // Ordena por ano, do mais recente para o mais antigo
+        usort($orientacoes, fn($a, $b) => (int)$b['ANO'] - (int)$a['ANO']);
+
+        // Aplica o filtro de limite (se houver)
+        return array_slice($orientacoes, 0, $limit_ini > 0 ? $limit_ini : null);
+    }
+
+    /**
+     * Lista as "Outras Produções Bibliográficas" (Traduções, Prefácios, etc.).
+     *
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @param String $tipo (opcional)
+     * @param Integer $limit_ini (opcional)
+     * @param Integer $limit_fim (opcional)
+     * @return Array|Bool
+     */
+    public static function listarOutrasProducoesBibliograficas($codpes, $lattes_array = null, $tipo = 'registros', $limit_ini = -1, $limit_fim = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
+            return false;
+        }
+
+        $producoes = [];
+        $caminhoBase = 'PRODUCAO-BIBLIOGRAFICA.DEMAIS-TIPOS-DE-PRODUCAO-BIBLIOGRAFICA';
+
+        $tiposDeProducao = [
+            'OUTRA-PRODUCAO-BIBLIOGRAFICA' => [
+                'dados' => 'DADOS-BASICOS-DE-OUTRA-PRODUCAO',
+                'detalhes' => 'DETALHAMENTO-DE-OUTRA-PRODUCAO',
+                'titulo' => 'TITULO',
+                'tipo' => 'NATUREZA'
+            ],
+            'PREFACIO-POSFACIO' => [
+                'dados' => 'DADOS-BASICOS-DO-PREFACIO-POSFACIO',
+                'detalhes' => 'DETALHAMENTO-DO-PREFACIO-POSFACIO',
+                'titulo' => 'TITULO',
+                'tipo' => 'TIPO'
+            ],
+            'TRADUCAO' => [
+                'dados' => 'DADOS-BASICOS-DA-TRADUCAO',
+                'detalhes' => 'DETALHAMENTO-DA-TRADUCAO',
+                'titulo' => 'TITULO',
+                'tipo' => 'NATUREZA'
+            ],
+        ];
+
+        foreach ($tiposDeProducao as $chaveProducao => $mapa) {
+            $items = Arr::get($lattes, "{$caminhoBase}.{$chaveProducao}", []);
+
+            if (!empty($items) && !is_numeric(key($items))) {
+                $items = [$items];
+            }
+
+            foreach ($items as $item) {
+                $dadosBasicos = Arr::get($item, "{$mapa['dados']}.@attributes", []);
+                $detalhamento = Arr::get($item, "{$mapa['detalhes']}.@attributes", []);
+                $autores = self::listarAutores(Arr::get($item, 'AUTORES', []));
+
+                $producoes[] = [
+                    'TITULO' => $dadosBasicos[$mapa['titulo']] ?? 'N/A',
+                    'TIPO' => $dadosBasicos[$mapa['tipo']] ?? 'N/A',
+                    'ANO' => $dadosBasicos['ANO'] ?? 'N/A',
+                    'EDITORA' => $detalhamento['EDITORA-DA-TRADUCAO'] ?? $detalhamento['EDITORA-DO-PREFACIO-POSFACIO'] ?? $detalhamento['EDITORA'] ?? 'N/A',
+                    'AUTORES' => $autores,
+                ];
+            }
+        }
+
+        // Ordena por ano, do mais recente para o mais antigo
+        usort($producoes, fn($a, $b) => (int)$b['ANO'] - (int)$a['ANO']);
+
+        // Aplica o filtro de limite (se houver)
+        return array_slice($producoes, 0, $limit_ini > 0 ? $limit_ini : null);
+    }
+
+    /**
+     * Helper para listar bancas de qualificação por nível (Mestrado/Doutorado).
+     *
+     * @param string $natureza O tipo de qualificação a ser filtrada.
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @return Array|Bool
+     */
+    private static function listarBancasQualificacaoPorNivel($natureza, $codpes, $lattes_array = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
+            return false;
+        }
+
+        $bancas = Arr::get($lattes, 'DADOS-COMPLEMENTARES.PARTICIPACAO-EM-BANCA-TRABALHOS-CONCLUSAO.PARTICIPACAO-EM-BANCA-DE-EXAME-QUALIFICACAO', []);
+
+        if (empty($bancas)) {
+            return [];
+        }
+
+        if (!is_numeric(key($bancas))) {
+            $bancas = [$bancas];
+        }
+
+        $qualificacoes = [];
+        foreach ($bancas as $banca) {
+            $dadosBasicos = Arr::get($banca, 'DADOS-BASICOS-DA-PARTICIPACAO-EM-BANCA-DE-EXAME-QUALIFICACAO.@attributes', []);
+
+            if (($dadosBasicos['NATUREZA'] ?? '') === $natureza) {
+                $detalhamento = Arr::get($banca, 'DETALHAMENTO-DA-PARTICIPACAO-EM-BANCA-DE-EXAME-QUALIFICACAO.@attributes', []);
+                $qualificacoes[] = [
+                    'TITULO' => $dadosBasicos['TITULO'] ?? 'N/A',
+                    'ANO' => $dadosBasicos['ANO'] ?? 'N/A',
+                    'CANDIDATO' => $detalhamento['NOME-DO-CANDIDATO'] ?? 'N/A',
+                ];
+            }
+        }
+
+        return $qualificacoes;
+    }
+
+    /**
+     * Lista as participações em bancas de qualificação de Doutorado.
+     *
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @return Array|Bool
+     */
+    public static function listarBancasQualificacaoDoutorado($codpes, $lattes_array = null)
+    {
+        return self::listarBancasQualificacaoPorNivel('Exame de qualificação de doutorado', $codpes, $lattes_array);
+    }
+
+    /**
+     * Lista as participações em bancas de qualificação de Mestrado.
+     *
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @return Array|Bool
+     */
+    public static function listarBancasQualificacaoMestrado($codpes, $lattes_array = null)
+    {
+        return self::listarBancasQualificacaoPorNivel('Exame de qualificação de mestrado', $codpes, $lattes_array);
+    }
+
+    /**
+     * Lista as participações em bancas de graduação.
+     *
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @return Array|Bool
+     */
+    public static function listarBancasGraduacao($codpes, $lattes_array = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
+            return false;
+        }
+
+        $bancas = Arr::get($lattes, 'DADOS-COMPLEMENTARES.PARTICIPACAO-EM-BANCA-TRABALHOS-CONCLUSAO.PARTICIPACAO-EM-BANCA-DE-GRADUACAO', []);
+
+        if (empty($bancas)) {
+            return [];
+        }
+
+        if (!is_numeric(key($bancas))) {
+            $bancas = [$bancas];
+        }
+
+        $graduacao = [];
+        foreach ($bancas as $banca) {
+            $dadosBasicos = Arr::get($banca, 'DADOS-BASICOS-DA-PARTICIPACAO-EM-BANCA-DE-GRADUACAO.@attributes', []);
+            $detalhamento = Arr::get($banca, 'DETALHAMENTO-DA-PARTICIPACAO-EM-BANCA-DE-GRADUACAO.@attributes', []);
+            $graduacao[] = [
+                'TITULO' => $dadosBasicos['TITULO'] ?? 'N/A',
+                'ANO' => $dadosBasicos['ANO'] ?? 'N/A',
+                'CANDIDATO' => $detalhamento['NOME-DO-CANDIDATO'] ?? 'N/A',
+            ];
+        }
+
+        return $graduacao;
+    }
+
+    /**
+     * Lista as participações em bancas de comissões julgadoras.
+     *
+     * @param Integer $codpes
+     * @param Array $lattes_array (opcional)
+     * @return Array|Bool
+     */
+    public static function listarBancasComissoesJulgadoras($codpes, $lattes_array = null)
+    {
+        if (!$lattes = $lattes_array ?? self::obterArray($codpes)) {
+            return false;
+        }
+
+        $comissoes = Arr::get($lattes, 'DADOS-COMPLEMENTARES.PARTICIPACAO-EM-BANCA-JULGADORA', []);
+        if (empty($comissoes)) {
+            return [];
+        }
+
+        $bancas = [];
+        // Itera sobre os diferentes tipos de bancas julgadoras (Professor Titular, Concurso, etc.)
+        foreach ($comissoes as $tipoBanca => $items) {
+            if (!is_array($items)) continue;
+
+            if (!is_numeric(key($items))) {
+                $items = [$items];
+            }
+
+            foreach ($items as $item) {
+                $dadosBasicosKey = str_replace('-', '_', 'DADOS-BASICOS-DA-' . strtoupper($tipoBanca));
+                $detalhamentoKey = str_replace('-', '_', 'DETALHAMENTO-DA-' . strtoupper($tipoBanca));
+
+                $dadosBasicos = Arr::get($item, "{$dadosBasicosKey}.@attributes", []);
+                $detalhamento = Arr::get($item, "{$detalhamentoKey}.@attributes", []);
+
+                $bancas[] = [
+                    'TITULO' => $dadosBasicos['TITULO'] ?? 'N/A',
+                    'ANO' => $dadosBasicos['ANO'] ?? 'N/A',
+                    'INSTITUICAO' => $detalhamento['NOME-INSTITUICAO'] ?? 'N/A',
+                ];
+            }
+        }
+        return $bancas;
+    }
+
+    /**
      * Helper para filtrar projetos por natureza.
      *
      * @param Integer $codpes

@@ -70,12 +70,19 @@
                                 <th class="text-center"><i class="fa-bullhorn text-primary"></i> Proj. Extensão</th> {{-- Mantido --}}
                                 <th class="text-center"><i class="fa-cogs text-warning"></i> Proj. Desenvolvimento</th> {{-- Renomeado e agregado --}}
                                 <th class="text-center"><i class="fa-sitemap text-secondary"></i> Linhas de Pesquisa</th>
-                                <th class="text-center"><i class="fa-user-graduate text-primary"></i> IC</th>
-                                <th class="text-center"><i class="fa-user-graduate text-success"></i> Mestrado</th>
-                                <th class="text-center"><i class="fa-user-graduate text-info"></i> Doutorado</th>
+                                <th class="text-center"><i class="fa-user-graduate text-primary"></i>Orientações Iniciação Científica</th>
+                                <th class="text-center"><i class="fa-user-graduate text-success"></i>Orientações Mestrado</th>
+                                <th class="text-center"><i class="fa-user-graduate text-info"></i>Orientações Doutorado</th>
                                 <th class="text-center"><i class="fa-edit text-primary"></i>Membro Corpo Editorial</th>
                                 <th class="text-center"><i class="fa-users-cog text-primary"></i> Membro Comitê Assessoramento</th>
-                                <th class="text-center"><i class="fa-trophy text-warning"></i> Prêmios</th>
+                                <th class="text-center"><i class="fa-tasks text-secondary"></i> Orientações e Supervisões em Andamento</th>
+                                <th class="text-center"><i class="fa-book-reader text-dark"></i> Outras Prod. Bibliográficas</th>
+                                <th class="text-center"><i class="fa-check-circle text-success"></i> Qualificação Mestrado</th>
+                                <th class="text-center"><i class="fa-check-double text-info"></i> Qualificação Doutorado</th>
+                                <th class="text-center"><i class="fa-user-check text-primary"></i> Bancas de Graduação</th>
+                                <th class="text-center"><i class="fa-gavel text-secondary"></i> Comissões Julgadoras</th>
+                                <th class="text-center"><i class="fa-info-circle text-info"></i> Outras Informações Relevantes</th>
+                                <th class="text-center"><i class="fa-trophy text-warning"></i> Prêmios e Títulos</th>
                                 <th class="text-center"><i class="fa-calendar-check text-warning"></i>Participação Eventos</th>
                                 <th class="text-center"><i class="fa-clock text-muted"></i> Atualização</th>
                                 <th class="text-center"><i class="fa-eye text-success"></i> Ações</th>
@@ -133,6 +140,27 @@
                                         {{ $docente['contagem']['membro-comite-assessoramento'] ?? 0 }}
                                     </td>
                                     <td class="text-center">
+                                        {{ $docente['contagem']['orientacoes-em-andamento'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['outras-producoes-bibliograficas'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['bancas-qualificacao-mestrado'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['bancas-qualificacao-doutorado'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['bancas-graduacao'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['bancas-comissoes-julgadoras'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['outras-informacoes-relevantes'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
                                         {{ $docente['contagem']['premios'] ?? 0 }}
                                     </td>
                                     <td class="text-center">
@@ -156,7 +184,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="18">
+                                    <td colspan="25">
                                         <div class="alert alert-warning mb-0">Nenhum docente encontrado ou dados indisponíveis.
                                         </div>
                                     </td>

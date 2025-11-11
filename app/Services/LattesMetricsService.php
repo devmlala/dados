@@ -100,6 +100,18 @@ class LattesMetricsService
         $bancasDoutorado = LattesService::retornarBancaDoutorado($codpes, $lattesArray);
         $bancasDoutorado = is_array($bancasDoutorado) ? $bancasDoutorado : [];
 
+        $bancasQualificacaoDoutorado = LattesService::listarBancasQualificacaoDoutorado($codpes, $lattesArray);
+        $bancasQualificacaoDoutorado = is_array($bancasQualificacaoDoutorado) ? $bancasQualificacaoDoutorado : [];
+
+        $bancasQualificacaoMestrado = LattesService::listarBancasQualificacaoMestrado($codpes, $lattesArray);
+        $bancasQualificacaoMestrado = is_array($bancasQualificacaoMestrado) ? $bancasQualificacaoMestrado : [];
+
+        $bancasGraduacao = LattesService::listarBancasGraduacao($codpes, $lattesArray);
+        $bancasGraduacao = is_array($bancasGraduacao) ? $bancasGraduacao : [];
+
+        $bancasComissoesJulgadoras = LattesService::listarBancasComissoesJulgadoras($codpes, $lattesArray);
+        $bancasComissoesJulgadoras = is_array($bancasComissoesJulgadoras) ? $bancasComissoesJulgadoras : [];
+
         $relatoriosPesquisa = LattesService::listarRelatorioPesquisa($codpes, $lattesArray, 'registros', -1);
         $relatoriosPesquisa = is_array($relatoriosPesquisa) ? $relatoriosPesquisa : [];
 
@@ -148,6 +160,15 @@ class LattesMetricsService
         $membroComiteAssessoramento = LattesService::listarMembroComiteAssessoramento($codpes, $lattesArray, 'registros', -1);
         $membroComiteAssessoramento = is_array($membroComiteAssessoramento) ? $membroComiteAssessoramento : [];
 
+        $outrasInformacoesRelevantes = LattesService::listarOutrasInformacoesRelevantes($codpes, $lattesArray);
+        $outrasInformacoesRelevantes = is_array($outrasInformacoesRelevantes) ? $outrasInformacoesRelevantes : [];
+
+        $orientacoesEmAndamento = LattesService::listarOrientacoesEmAndamento($codpes, $lattesArray, 'registros', -1);
+        $orientacoesEmAndamento = is_array($orientacoesEmAndamento) ? $orientacoesEmAndamento : [];
+
+        $outrasProducoesBibliograficas = LattesService::listarOutrasProducoesBibliograficas($codpes, $lattesArray, 'registros', -1);
+        $outrasProducoesBibliograficas = is_array($outrasProducoesBibliograficas) ? $outrasProducoesBibliograficas : [];
+
         $premios = LattesService::listarPremios($codpes, $lattesArray);
         $premios = is_array($premios) ? $premios : [];
 
@@ -170,6 +191,10 @@ class LattesMetricsService
             'capitulos-livros' => count($capitulosLivros),
             'bancas-mestrado' => count($bancasMestrado),
             'bancas-doutorado' => count($bancasDoutorado),
+            'bancas-qualificacao-mestrado' => count($bancasQualificacaoMestrado),
+            'bancas-qualificacao-doutorado' => count($bancasQualificacaoDoutorado),
+            'bancas-graduacao' => count($bancasGraduacao),
+            'bancas-comissoes-julgadoras' => count($bancasComissoesJulgadoras),
             'relatorios-pesquisa' => count($relatoriosPesquisa),
             'formacao-academica' => count($formacaoAcademica),
             'formacao-profissional' => count($formacaoProfissional),
@@ -182,6 +207,9 @@ class LattesMetricsService
             'eventos' => count($eventos),
             'membro-comite-assessoramento' => count($membroComiteAssessoramento),
             'membro-corpo-editorial' => count($membroCorpoEditorial),
+            'outras-informacoes-relevantes' => count($outrasInformacoesRelevantes),
+            'orientacoes-em-andamento' => count($orientacoesEmAndamento),
+            'outras-producoes-bibliograficas' => count($outrasProducoesBibliograficas),
             'linhas-pesquisa' => count($linhasDePesquisa),
             'premios' => count($premios),
         ];
@@ -202,6 +230,9 @@ class LattesMetricsService
             'orientacoesPosDoc',
             'membroComiteAssessoramento',
             'membroCorpoEditorial',
+            'orientacoesEmAndamento',
+            'outrasProducoesBibliograficas',
+            'outrasInformacoesRelevantes',
             'linhasDePesquisa',
             'linhasDePesquisa',
             'textosJornaisRevistas',
@@ -210,6 +241,10 @@ class LattesMetricsService
             'apresTrab',
             'bancasMestrado',
             'bancasDoutorado',
+            'bancasQualificacaoMestrado',
+            'bancasQualificacaoDoutorado',
+            'bancasGraduacao',
+            'bancasComissoesJulgadoras',
             'relatoriosPesquisa',
             'formacaoAcademica',
             'formacaoProfissional',
@@ -218,6 +253,9 @@ class LattesMetricsService
             'materialDidatico',
             'eventos',
             'membroComiteAssessoramento',
+            'outrasProducoesBibliograficas',
+            'orientacoesEmAndamento',
+            'outrasInformacoesRelevantes',
             'membroCorpoEditorial',
             'resumoCV',
             'ultimaAtualizacao',
