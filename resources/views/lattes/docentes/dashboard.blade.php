@@ -1,12 +1,12 @@
 @extends('laravel-usp-theme::master')
 
 @section('content')
-    <div class="container">
+    <div class="container-fluid">
         <div class="card shadow-sm mb-4 bg-light border-0">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">_
-                        <i class="fa-chalkboard-teacher fa-3x text-primary"></i>
+                        <i class="-chalkboard-teacher -3x text-primary"></i>
                     </div>_
                     <div class="flex-grow-1 ms-3">
                         <h4 class="fw-bold text-primary mb-1">Dashboard de Métricas Lattes</h4>
@@ -50,7 +50,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary mt-2"><i class="fa-filter"></i> Aplicar Filtros</button>
+                <button type="submit" class="btn btn-primary mt-2"><i class="-filter"></i> Aplicar Filtros</button>
                 <a href="{{ route('lattes.dashboard') }}" class="btn btn-outline-secondary mt-2">Limpar Filtros</a>
             </div>
         </form>
@@ -58,35 +58,47 @@
         <div class="card shadow-sm mb-4">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0 small">
                         <thead class="thead-light">
                             <tr>
                                 <th class="pl-4">Docente</th>
                                 <th class="text-center">Departamento</th>
-                                <th class="text-center"><i class="fa-file-alt text-primary"></i> Artigos</th>
-                                <th class="text-center"><i class="fa-book text-success"></i> Livros</th>
-                                <th class="text-center"><i class="fa-book-open text-info"></i> Capítulos</th>
-                                <th class="text-center"><i class="fa-flask text-info"></i> Proj. Pesquisa</th> {{-- Mantido --}}
-                                <th class="text-center"><i class="fa-bullhorn text-primary"></i> Proj. Extensão</th> {{-- Mantido --}}
-                                <th class="text-center"><i class="fa-cogs text-warning"></i> Proj. Desenvolvimento</th> {{-- Renomeado e agregado --}}
-                                <th class="text-center"><i class="fa-sitemap text-secondary"></i> Linhas de Pesquisa</th>
-                                <th class="text-center"><i class="fa-user-graduate text-primary"></i>Orientações Iniciação Científica</th>
-                                <th class="text-center"><i class="fa-user-graduate text-success"></i>Orientações Mestrado</th>
-                                <th class="text-center"><i class="fa-user-graduate text-info"></i>Orientações Doutorado</th>
-                                <th class="text-center"><i class="fa-edit text-primary"></i>Membro Corpo Editorial</th>
-                                <th class="text-center"><i class="fa-users-cog text-primary"></i> Membro Comitê Assessoramento</th>
-                                <th class="text-center"><i class="fa-tasks text-secondary"></i> Orientações e Supervisões em Andamento</th>
-                                <th class="text-center"><i class="fa-book-reader text-dark"></i> Outras Prod. Bibliográficas</th>
-                                <th class="text-center"><i class="fa-check-circle text-success"></i> Qualificação Mestrado</th>
-                                <th class="text-center"><i class="fa-check-double text-info"></i> Qualificação Doutorado</th>
-                                <th class="text-center"><i class="fa-user-check text-primary"></i> Bancas de Graduação</th>
-                                <th class="text-center"><i class="fa-gavel text-secondary"></i> Comissões Julgadoras</th>
-                                <th class="text-center"><i class="fa-info-circle text-info"></i> Outras Informações Relevantes</th>
-                                <th class="text-center"><i class="fa-trophy text-warning"></i> Prêmios e Títulos</th>
-                                <th class="text-center"><i class="fa-calendar-check text-warning"></i>Participação Eventos</th>
-                                <th class="text-center"><i class="fa-clock text-muted"></i> Atualização</th>
-                                <th class="text-center"><i class="fa-eye text-success"></i> Ações</th>
-                                <th class="text-center"><i class="fa-download text-success"></i> Exportar</th>
+                                <th class="text-center"><i class="text-primary"></i> Artigos</th>
+                                <th class="text-center"><i class="text-success"></i> Livros</th>
+                                <th class="text-center"><i class="text-info"></i> Capítulos</th>
+                                <th class="text-center"><i class="text-info"></i> Proj. Pesquisa</th> {{-- Mantido --}}
+                                <th class="text-center"><i class="text-primary"></i> Proj. Extensão</th> {{-- Mantido --}}
+                                <th class="text-center"><i class="text-warning"></i> Proj. Desenvolvimento</th> {{-- Renomeado e agregado --}}
+                                <th class="text-center"><i class="text-secondary"></i> Linhas de Pesquisa</th>
+                                <th class="text-center"><i class="text-primary"></i>Orientações Iniciação Científica</th>
+                                <th class="text-center"><i class="text-success"></i>Orientações Mestrado</th>
+                                <th class="text-center"><i class="text-info"></i>Orientações Doutorado</th>
+                                <th class="text-center"><i class="text-secondary"></i>Orientações Pós-Doc</th>
+                                <th class="text-center"><i class="text-primary"></i>Textos Jornais/Revistas</th>
+                                <th class="text-center"><i class="text-secondary"></i>Trabalhos em Anais</th>
+                                <th class="text-center"><i class="text-dark"></i>Trabalhos Técnicos</th>
+                                <th class="text-center"><i class="text-info"></i>Apres. de Trabalho</th>
+                                <th class="text-center"><i class="text-success"></i>Bancas de Mestrado</th>
+                                <th class="text-center"><i class="text-info"></i>Bancas de Doutorado</th>
+                                <th class="text-center"><i class="text-warning"></i>Relatórios de Pesquisa</th>
+                                <th class="text-center"><i class="text-success"></i>Organização de Eventos</th>
+                                <th class="text-center"><i class="text-danger"></i>Material Didático</th>
+                                <th class="text-center"><i class="text-dark"></i>Formação Acadêmica</th>
+                                <th class="text-center"><i class="text-primary"></i>Formação Profissional</th>
+                                <th class="text-center"><i class="text-primary"></i>Membro Corpo Editorial</th>
+                                <th class="text-center"><i class="text-primary"></i> Membro Comitê Assessoramento</th>
+                                <th class="text-center"><i class="text-secondary"></i> Orientações e Supervisões em Andamento</th>
+                                <th class="text-center"><i class="text-dark"></i> Outras Prod. Bibliográficas</th>
+                                <th class="text-center"><i class="text-success"></i> Qualificação Mestrado</th>
+                                <th class="text-center"><i class="text-info"></i> Qualificação Doutorado</th>
+                                <th class="text-center"><i class="text-primary"></i> Bancas de Graduação</th>
+                                <th class="text-center"><i class="text-secondary"></i> Comissões Julgadoras</th>
+                                <th class="text-center"><i class="text-info"></i> Outras Informações Relevantes</th>
+                                <th class="text-center"><i class="text-warning"></i> Prêmios e Títulos</th>
+                                <th class="text-center"><i class="text-warning"></i>Participação Eventos</th>
+                                <th class="text-center"><i class="text-muted"></i> Atualização</th>
+                                <th class="text-center"><i class="text-success"></i> Ações</th>
+                                <th class="text-center"><i class="text-success"></i> Exportar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -96,7 +108,7 @@
                                         <strong>{{ $docente['docente']['nompes'] }}</strong>
                                         @if (!empty($docente['docente']['orcid']))
                                             <div class="small text-muted">
-                                                <i class="fab fa-orcid text-success"></i> {{ $docente['docente']['orcid'] }}
+                                                <i class="b -orcid text-success"></i> {{ $docente['docente']['orcid'] }}
                                             </div>
                                         @endif
                                     </td>
@@ -132,6 +144,42 @@
                                     </td>
                                     <td class="text-center">
                                         {{ $docente['contagem']['orientacoes-concluidas-doutorado'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['orientacoes-concluidas-pos-doutorado'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['textos-jornais-revistas'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['trabalhos-anais'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['trabalhos-tecnicos'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['apresentacao-de-trabalho'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['bancas-mestrado'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['bancas-doutorado'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['relatorios-pesquisa'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['organizacao-eventos'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['material-didatico'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['formacao-academica'] ?? 0 }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $docente['contagem']['formacao-profissional'] ?? 0 }}
                                     </td>
                                     <td class="text-center">
                                         {{ $docente['contagem']['membro-corpo-editorial'] ?? 0 }}
@@ -172,19 +220,19 @@
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-success" data-toggle="modal"
                                             data-target="#modalResumo{{ $docente['docente']['codpes'] }}">_
-                                            <i class="fa-eye"></i>
+                                            <i class="-eye"></i>
                                         </button>
                                     </td>
                                     <td class="text-center">
                                         <a href="{{ route('lattes.exportar', $docente['docente']['codpes']) }}"
                                             class="btn btn-sm btn-outline-primary" title="Exportar Excel">_
-                                            <i class="fa-download"></i>
+                                            <i class="-download"></i>
                                         </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="25">
+                                    <td colspan="37">
                                         <div class="alert alert-warning mb-0">Nenhum docente encontrado ou dados indisponíveis.
                                         </div>
                                     </td>
@@ -202,7 +250,7 @@
 
         <!-- Modal para resumo -->
         @foreach ($docentes as $docente)
-            <div class="modal fade" id="modalResumo{{ $docente['docente']['codpes'] }}" tabindex="-1" role="dialog">
+            <div class="modal de" id="modalResumo{{ $docente['docente']['codpes'] }}" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -211,7 +259,7 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <h6><i class="fa-graduation-cap"></i> Formação Acadêmica</h6>
+                                <h6><i class="-graduation-cap"></i> Formação Acadêmica</h6>
                                 <ul class="list-group small">
                                     @foreach(($docente['formacaoAcademica'] ?? []) as $formacao)
                                         <li class="list-group-item">{{ $formacao['titulo'] ?? 'N/A' }} -
@@ -224,7 +272,7 @@
                                 <div class="col-md-6">
                                     <div class="card mb-3">
                                         <div class="card-header bg-light">
-                                            <h6 class="mb-0"><i class="fa-chart-pie"></i> Estatísticas</h6>
+                                            <h6 class="mb-0"><i class="-chart-pie"></i> Estatísticas</h6>
                                         </div>
                                         <div class="card-body">
                                             <ul class="list-unstyled">
@@ -246,7 +294,7 @@
                                 <div class="col-md-6">
                                     <div class="card mb-3">
                                         <div class="card-header bg-light">
-                                            <h6 class="mb-0"><i class="fa-trophy"></i> Prêmios</h6>
+                                            <h6 class="mb-0"><i class="-trophy"></i> Prêmios</h6>
                                         </div>
                                         <div class="card-body">
                                             @if(!empty($docente['premios']))
@@ -266,7 +314,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <h6><i class="fa-quote-left"></i> Resumo CV</h6>
+                                <h6><i class="-quote-left"></i> Resumo CV</h6>
                                 <div class="card card-body bg-light">
                                     {{ $docente['resumoCV'] ?? 'Resumo não disponível' }}
                                 </div>
@@ -275,11 +323,11 @@
                         <div class="modal-footer">
                             <a href="{{ route('lattes.exportar_detalhado', $docente['docente']['codpes']) }}"
                                 class="btn btn-outline-primary">
-                                <i class="fa-file-excel"></i> Exportar Dados Detalhados
+                                <i class="-file-excel"></i> Exportar Dados Detalhados
                             </a>
                             <a href="{{ route('lattes.exportar_json', $docente['docente']['codpes']) }}"
                                 class="btn btn-outline-info">
-                                <i class="fa-file-code"></i> Exportar JSON Completo
+                                <i class="-file-code"></i> Exportar JSON Completo
                             </a>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
                         </div>
