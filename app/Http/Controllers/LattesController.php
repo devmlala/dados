@@ -103,6 +103,9 @@ class LattesController extends Controller
             //$docente['nompes'] = utf8_encode($docente['nompes'] ?? '');
             $docente['nompes'] = $docente['nompes'] ?? '';
 
+            //formatar o texto dos premios
+            $metricas['premios'] = array_map('html_entity_decode', $metricas['premios']);
+               
             // Optimization: Fetch and cache departments only for the professors on the current page.
             $departamentos = $this->getDepartamentosDocente($docente['codpes']);
 
