@@ -42,7 +42,7 @@ class DocenteDetalhadoExport implements WithMultipleSheets
             'bancasQualificacaoDoutorado' => 'Bancas de Qual. Doutorado',
             'bancasQualificacaoMestrado' => 'Bancas de Qual. Mestrado',
             'bancasGraduacao' => 'Bancas de Graduação',
-            'bancasComissoesJulgadoras' => 'Comissões Julgadoras',
+            'bancasComissoesJulgadoras' => 'Part. Bancas Comissão Julgadoras',
             'trabAnais' => 'Trabalhos em Anais',
             'trabTecnicos' => 'Trabalhos Técnicos',
             'apresTrab' => 'Apresentações de Trabalho',

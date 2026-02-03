@@ -514,8 +514,8 @@ class Lattes extends LattesBase
             }
 
             foreach ($items as $item) {
-                $dadosBasicosKey = str_replace('-', '_', 'DADOS-BASICOS-DA-' . strtoupper($tipoBanca));
-                $detalhamentoKey = str_replace('-', '_', 'DETALHAMENTO-DA-' . strtoupper($tipoBanca));
+                $dadosBasicosKey = 'DADOS-BASICOS-DA-' . $tipoBanca;
+                $detalhamentoKey = 'DETALHAMENTO-DA-' . $tipoBanca;
 
                 $dadosBasicos = Arr::get($item, "{$dadosBasicosKey}.@attributes", []);
                 $detalhamento = Arr::get($item, "{$detalhamentoKey}.@attributes", []);

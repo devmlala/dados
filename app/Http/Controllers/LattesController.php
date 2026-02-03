@@ -93,9 +93,16 @@ class LattesController extends Controller
             // Optimization: Fetch and cache departments only for the professors on the current page.
             $departamentos = $this->getDepartamentosDocente($docente['codpes']);
 
+            $lattesId = null;
+            $lattesArray = Lattes::obterArray($docente['codpes']);
+            if ($lattesArray && isset($lattesArray['@attributes']['NUMERO-IDENTIFICADOR'])) {
+                $lattesId = $lattesArray['@attributes']['NUMERO-IDENTIFICADOR'];
+            }
+
             $docentesComMetricas[] = array_merge($metricas, [
                 'docente' => $docente,
                 'departamentos' => $departamentos,
+                'lattes_id' => $lattesId,
             ]);
         }
 

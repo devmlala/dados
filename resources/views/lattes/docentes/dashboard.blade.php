@@ -92,7 +92,7 @@
                                 <th class="text-center"><i class="text-success"></i> Qualificação Mestrado</th>
                                 <th class="text-center"><i class="text-info"></i> Qualificação Doutorado</th>
                                 <th class="text-center"><i class="text-primary"></i> Bancas de Graduação</th>
-                                <th class="text-center"><i class="text-secondary"></i> Comissões Julgadoras</th>
+                                <th class="text-center"><i class="text-secondary"></i> Part. Bancas Comissão Julgadoras</th>
                                 <th class="text-center"><i class="text-info"></i> Outras Informações Relevantes</th>
                                 <th class="text-center"><i class="text-warning"></i> Prêmios e Títulos</th>
                                 <th class="text-center"><i class="text-warning"></i>Participação Eventos</th>
@@ -109,6 +109,14 @@
                                         @if (!empty($docente['docente']['orcid']))
                                             <div class="small text-muted">
                                                 <i class="b -orcid text-success"></i> {{ $docente['docente']['orcid'] }}
+                                            </div>
+                                        @endif
+                                        @if (!empty($docente['lattes_id']))
+                                            <div class="small text-muted mt-1">
+                                                Endereço para acessar este CV:
+                                                <a href="http://lattes.cnpq.br/{{ $docente['lattes_id'] }}" target="_blank" rel="noopener noreferrer">
+                                                    http://lattes.cnpq.br/{{ $docente['lattes_id'] }}
+                                                </a>
                                             </div>
                                         @endif
                                     </td>
