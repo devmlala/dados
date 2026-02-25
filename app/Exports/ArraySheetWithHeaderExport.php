@@ -39,6 +39,18 @@ class ArraySheetWithHeaderExport extends ArraySheetExport implements FromArray, 
             'anoConclusao' => 'Ano de Conclusão',
             'nivel' => 'Nível',
             'Descrição' => 'Título', // Para listas simples
+
+            // Projetos
+            'NOME-DO-PROJETO' => 'Nome do Projeto',
+            'ANO-INICIO' => 'Ano Início',
+            'ANO-FIM' => 'Ano Fim',
+            'SITUACAO' => 'Situação',
+            'NATUREZA' => 'Natureza',
+            'DESCRICAO-DO-PROJETO' => 'Descrição',
+            'COORDENADORES' => 'Coordenador(es)',
+            'EQUIPE-DO-PROJETO' => 'Equipe',
+            'FINANCIADORES' => 'Financiadores',
+            'NUMERO-CONVENIO' => 'Número(s) Convênio',
         ];
 
         // Pega as chaves do primeiro item para usar como cabeçalho

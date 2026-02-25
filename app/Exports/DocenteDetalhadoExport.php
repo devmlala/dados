@@ -56,7 +56,7 @@ class DocenteDetalhadoExport implements WithMultipleSheets
         
         // Add specific project sheets
         if (!empty($this->dados['projetosPesquisa'])) {
-            $sheets[] = new ArraySheetWithHeaderExport($this->processarProjetos($this->dados['projetosPesquisa']), 'Projetos de Pesquisa');
+            $sheets[] = new ArraySheetWithHeaderExport($this->processarProjetosPesquisa($this->dados['projetosPesquisa']), 'Projetos de Pesquisa');
         }
 
         if (!empty($this->dados['projetosExtensao'])) {
@@ -133,6 +133,126 @@ class DocenteDetalhadoExport implements WithMultipleSheets
             ];
         }
         return $projetosFormatados;
+    }
+
+    /**
+     * Manipulador específico para 'projetosPesquisa' com tratamento robusto de estrutura e novos campos.
+     */
+    private function processarProjetosPesquisa(array $data): array
+    {
+        $projetosFormatados = [];
+        foreach ($data as $projetoData) {
+            // Os dados principais do projeto estão em '@attributes'
+            $projeto = $projetoData['@attributes'] ?? $projetoData;
+
+            // Identificação básica
+            $nome = $projeto['NOME-DO-PROJETO'] ?? 'N/A';
+            $anoInicio = $projeto['ANO-INICIO'] ?? 'N/A';
+            $anoFim = $projeto['ANO-FIM'] ?? 'N/A';
+            $situacao = $projeto['SITUACAO'] ?? 'N/A';
+            $natureza = $projeto['NATUREZA'] ?? 'N/A';
+            $descricao = $projeto['DESCRICAO-DO-PROJETO'] ?? 'N/A';
+
+            // Tratamento de Equipe
+            // A equipe é um nó irmão de '@attributes'
+            $equipeContainer = $projetoData['EQUIPE-DO-PROJETO'] ?? [];
+            $integrantes = $equipeContainer['INTEGRANTES-DO-PROJETO'] ?? [];
+            
+            // Se não encontrou em INTEGRANTES-DO-PROJETO, tenta usar o container direto (fallback)
+            if (empty($integrantes) && !empty($equipeContainer) && !isset($equipeContainer['INTEGRANTES-DO-PROJETO'])) {
+                 $integrantes = $equipeContainer;
+            }
+
+            $equipeLista = $this->normalizarLista($integrantes);
+            
+            $equipeNomes = [];
+            $coordenadores = [];
+            
+            foreach ($equipeLista as $integranteItem) {
+                // Os dados de cada integrante também estão em '@attributes'
+                $integrante = $integranteItem['@attributes'] ?? $integranteItem;
+
+                $nomeInt = $integrante['NOME-COMPLETO'] ?? 'N/A';
+                $equipeNomes[] = $nomeInt;
+                
+                // Verifica flag de responsável/coordenador
+                $flagResponsavel = $integrante['FLAG-RESPONSAVEL'] ?? 'NAO';
+                if (strtoupper($flagResponsavel) === 'SIM') {
+                    $coordenadores[] = $nomeInt;
+                }
+            }
+            
+            $equipeStr = implode('; ', $equipeNomes);
+            $coordenadorStr = implode('; ', $coordenadores);
+
+            // Tratamento de Financiadores
+            // Os financiadores são um nó irmão de '@attributes'
+            $financiadoresContainer = $projetoData['FINANCIADORES-DO-PROJETO'] ?? [];
+            $financiadores = $financiadoresContainer['FINANCIADOR-DO-PROJETO'] ?? [];
+            
+            // Fallback se não tiver a chave intermediária
+            if (empty($financiadores) && !empty($financiadoresContainer) && !isset($financiadoresContainer['FINANCIADOR-DO-PROJETO'])) {
+                $financiadores = $financiadoresContainer;
+            }
+
+            $financiadoresLista = $this->normalizarLista($financiadores);
+            
+            $financiadoresStr = [];
+            $conveniosStr = [];
+            
+            foreach ($financiadoresLista as $financiadorItem) {
+                // Os dados de cada financiador também estão em '@attributes'
+                $financiador = $financiadorItem['@attributes'] ?? $financiadorItem;
+                $inst = $financiador['NOME-INSTITUICAO'] ?? '';
+                $natFin = $financiador['NATUREZA'] ?? '';
+                $conv = $financiador['NUMERO-CONVENIO'] ?? '';
+                
+                if ($inst) {
+                    $info = $inst;
+                    if ($natFin) $info .= " ({$natFin})";
+                    $financiadoresStr[] = $info;
+                }
+                
+                if ($conv) {
+                    $conveniosStr[] = $conv;
+                }
+            }
+            
+            $financiadoresCol = implode('; ', $financiadoresStr);
+            $conveniosCol = implode('; ', $conveniosStr);
+
+            $projetosFormatados[] = [
+                'NOME-DO-PROJETO' => $nome,
+                'ANO-INICIO' => $anoInicio,
+                'ANO-FIM' => $anoFim,
+                'SITUACAO' => $situacao,
+                'NATUREZA' => $natureza,
+                'DESCRICAO-DO-PROJETO' => $descricao,
+                'COORDENADORES' => $coordenadorStr,
+                'EQUIPE-DO-PROJETO' => $equipeStr,
+                'FINANCIADORES' => $financiadoresCol,
+                'NUMERO-CONVENIO' => $conveniosCol,
+            ];
+        }
+        return $projetosFormatados;
+    }
+
+    /**
+     * Normaliza um item que pode ser um array associativo (item único) ou uma lista de arrays (vários itens).
+     */
+    private function normalizarLista($item): array
+    {
+        if (empty($item) || !is_array($item)) {
+            return [];
+        }
+
+        // Se a chave 0 existe, é uma lista numérica (lista de objetos)
+        if (isset($item[0])) {
+            return $item;
+        }
+
+        // Caso contrário, é um único objeto (array associativo), retornamos envolto em array
+        return [$item];
     }
 
     /**
