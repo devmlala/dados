@@ -141,8 +141,15 @@ class DocenteDetalhadoExport implements WithMultipleSheets
     private function processarProjetosPesquisa(array $data): array
     {
         $projetosFormatados = [];
-        foreach ($data as $projetoData) {
-            // Os dados principais do projeto estão em '@attributes'
+        foreach ($data as $processedProject) {
+            // Use the raw data embedded by Lattes::processarProjeto for full details
+            $projetoData = $processedProject['RAW_DATA'] ?? null;
+
+            // If RAW_DATA is not present, it means the data is already raw, or it's the old processed format.
+            // The logic below attempts to handle both, but prefers the raw structure.
+            if (is_null($projetoData)) {
+                $projetoData = $processedProject;
+            }
             $projeto = $projetoData['@attributes'] ?? $projetoData;
 
             // Identificação básica
@@ -187,16 +194,12 @@ class DocenteDetalhadoExport implements WithMultipleSheets
 
             // Tratamento de Financiadores
             // Os financiadores são um nó irmão de '@attributes'
-            $financiadoresContainer = $projetoData['FINANCIADORES-DO-PROJETO'] ?? [];
-            $financiadores = $financiadoresContainer['FINANCIADOR-DO-PROJETO'] ?? [];
-            
-            // Fallback se não tiver a chave intermediária
-            if (empty($financiadores) && !empty($financiadoresContainer) && !isset($financiadoresContainer['FINANCIADOR-DO-PROJETO'])) {
-                $financiadores = $financiadoresContainer;
+            $financiadoresLista = [];
+            if (isset($projetoData['FINANCIADORES-DO-PROJETO'])) {
+                $financiadoresRaw = $projetoData['FINANCIADORES-DO-PROJETO']['FINANCIADOR-DO-PROJETO'] ?? $projetoData['FINANCIADORES-DO-PROJETO'];
+                $financiadoresLista = $this->normalizarLista($financiadoresRaw);
             }
 
-            $financiadoresLista = $this->normalizarLista($financiadores);
-            
             $financiadoresStr = [];
             $conveniosStr = [];
             
